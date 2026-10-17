@@ -1,0 +1,6 @@
+Titolo: Aggiunta di un prodotto al carrello
+Area: Kiosk self-order
+
+Il cliente, dalla pagina del menu, può aggiungere un prodotto al carrello toccando "Aggiungi".
+Se il prodotto è esaurito, il pulsante "Aggiungi" è disattivato.
+Il carrello mostra il totale aggiornato dopo ogni aggiunta.
