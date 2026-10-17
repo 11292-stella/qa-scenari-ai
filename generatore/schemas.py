@@ -34,12 +34,19 @@ class DomandaAI(BaseModel):
     domanda: str = Field(min_length=10, description="Domanda per chi ha scritto il requisito")
 
 
+def campi(modello: type[BaseModel]) -> dict:
+    """I campi di un modello nel formato che vuole create_model: {nome: (tipo, regole)}."""
+    return {nome: (campo.annotation, campo) for nome, campo in modello.model_fields.items()}
+
+
 def schema_risposta(codici: list[str]) -> type[BaseModel]:
     """Crea al volo lo schema della risposta: 'codice' può essere SOLO uno dei codici della checklist."""
     Codice = Literal[tuple(codici)]  # es. Literal["L1", "L2", ..., "L32"]
 
-    Scenario = create_model("Scenario", codice=(Codice, ...), __base__=ScenarioAI)
-    Domanda = create_model("Domanda", codice=(Codice, ...), __base__=DomandaAI)
+    # 'codice' va messo PRIMA degli altri campi: il modello scrive il JSON in ordine,
+    # quindi deve prima decidere di quale punto parla e poi scrivere il resto.
+    Scenario = create_model("Scenario", codice=(Codice, ...), **campi(ScenarioAI))
+    Domanda = create_model("Domanda", codice=(Codice, ...), **campi(DomandaAI))
 
     return create_model(
         "Risposta",

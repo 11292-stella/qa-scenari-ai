@@ -1,0 +1,242 @@
+{
+  "scenari": [
+    {
+      "codice": "L1",
+      "livello": "e2e",
+      "citazione": "L'utente del ristorante accede al gestionale dalla pagina di login inserendo username e password. Il campo password nasconde i caratteri digitati. Il bottone 'Accedi' è disabilitato finché username o password sono vuoti o contengono solo spazi. Con credenziali valide l'utente arriva alla dashboard. Con username o password errati compare lo stesso messaggio di errore e l'utente resta sulla pagina di login. Le pagine del gestionale (dashboard, prodotti, categorie, ordini) si aprono solo dopo il login: senza login l'utente viene riportato alla pagina di login. Con il logout l'utente torna alla pagina di login e non può più aprire le pagine del gestionale.",
+      "titolo": "Login con credenziali valide porta all'area riservata",
+      "dato": ["@utente accede alla pagina di login"],
+      "quando": ["@utente inserisce username e password"],
+      "allora": ["@utente vede il campo password nascosto e il bottone 'Accedi' disabilitato se username o password sono vuote o solo spazi, e si autentica con le credenziali valide e arriva alla dashboard. Se le credenziali sono errate, vede lo stesso messaggio di errore e resta sulla pagina di login. Le pagine del gestionale non sono accessibili senza login e torna alla pagina di login con il logout."]
+    },
+    {
+      "codice": "L2",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "L'API restituisce token o sessione con credenziali valide",
+      "dato": ["@utente invia le credenziali alla API"],
+      "quando": ["@API restituisce token o sessione"],
+      "allora": ["@utente viene autenticato e riceve token o sessione"]
+    },
+    {
+      "codice": "L3",
+      "livello": "e2e",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con password errata: messaggio di errore, si resta sulla pagina di login",
+      "dato": ["@utente invia le credenziali con una password errata"],
+      "quando": ["@API restituisce errore 401 senza token"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L4",
+      "livello": "e2e",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con username o password errati: si resta sulla pagina di login",
+      "dato": ["@utente invia le credenziali con username o password errati"],
+      "quando": ["@API restituisce errore 401 senza token"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L5",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con credenziali errate: l'API risponde con errore e senza token",
+      "dato": ["@utente invia le credenziali con credenziali errate"],
+      "quando": ["@API restituisce errore 401 senza token"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L6",
+      "livello": "unit",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con campi vuoti, uno solo compilato o solo spazi: non si può inviare",
+      "dato": ["@utente invia le credenziali con campi vuoti, uno solo compilato o solo spazi"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede un messaggio di errore e non può inviare le credenziali"]
+    },
+    {
+      "codice": "L7",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con maiuscole/minuscole in username e password: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali con maiuscole/minuscole in username e password"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede un messaggio di errore e non può inviare le credenziali"]
+    },
+    {
+      "codice": "L8",
+      "livello": "unit",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con lunghezza massima dei campi: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali con lunghezza massima dei campi"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede un messaggio di errore e non può inviare le credenziali"]
+    },
+    {
+      "codice": "L9",
+      "livello": "e2e",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Le pagine protette senza login riportano alla pagina di login",
+      "dato": ["@utente cerca una pagina protetta senza login"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L10",
+      "livello": "e2e",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con il logout: l'utente torna alla pagina di login e non può più aprire le pagine del gestionale",
+      "dato": ["@utente invia le credenziali e chiude la sessione"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L11",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con sessione o token scaduto: si torna alla pagina di login",
+      "dato": ["@utente invia le credenziali con sessione o token scaduto"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L12",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con tentativi errati: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali con troppi tentativi errati"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L13",
+      "livello": "unit",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con credenziali valide l'API restituisce token o sessione",
+      "dato": ["@utente invia le credenziali"],
+      "quando": ["@API restituisce token o sessione"],
+      "allora": ["@utente vede il campo password nascosto e il bottone 'Accedi' disabilitato se username o password sono vuote o solo spazi, e si autentica con le credenziali valide e arriva alla dashboard. Se le credenziali sono errate, vede lo stesso messaggio di errore e resta sulla pagina di login. Le pagine del gestionale non sono accessibili senza login e torna alla pagina di login con il logout."]
+    },
+    {
+      "codice": "L14",
+      "livello": "unit",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con username o email con formato non valido: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali con username o email con formato non valido"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L15",
+      "livello": "unit",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con username o email con spazi prima o dopo: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali con username o email con spazi prima o dopo"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L16",
+      "livello": "e2e",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con il login: il pulsante si disabilita o compare un caricamento",
+      "dato": ["@utente invia le credenziali"],
+      "quando": ["@API restituisce token o sessione"],
+      "allora": ["@utente vede il campo password nascosto e il bottone 'Accedi' disabilitato se username o password sono vuote o solo spazi, e si autentica con le credenziali valide e arriva alla dashboard. Se le credenziali sono errate, vede lo stesso messaggio di errore e resta sulla pagina di login. Le pagine del gestionale non sono accessibili senza login e torna alla pagina di login con il logout."]
+    },
+    {
+      "codice": "L17",
+      "livello": "e2e",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con il login: il pulsante si disabilita o compare un caricamento",
+      "dato": ["@utente invia le credenziali"],
+      "quando": ["@API restituisce token o sessione"],
+      "allora": ["@utente vede il campo password nascosto e il bottone 'Accedi' disabilitato se username o password sono vuote o solo spazi, e si autentica con le credenziali valide e arriva alla dashboard. Se le credenziali sono errate, vede lo stesso messaggio di errore e resta sulla pagina di login. Le pagine del gestionale non sono accessibili senza login e torna alla pagina di login con il logout."]
+    },
+    {
+      "codice": "L18",
+      "livello": "unit",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con il login: il pulsante si disabilita o compare un caricamento",
+      "dato": ["@utente invia le credenziali"],
+      "quando": ["@API restituisce token o sessione"],
+      "allora": ["@utente vede il campo password nascosto e il bottone 'Accedi' disabilitato se username o password sono vuote o solo spazi, e si autentica con le credenziali valide e arriva alla dashboard. Se le credenziali sono errate, vede lo stesso messaggio di errore e resta sulla pagina di login. Le pagine del gestionale non sono accessibili senza login e torna alla pagina di login con il logout."]
+    },
+    {
+      "codice": "L19",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con errore di rete o server non raggiungibile: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L20",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con risposta lenta del server: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L21",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con errore del server: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L22",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con token non valido, manipolato o malformato: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali con token non valido, manipolato o malformato"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L23",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con utente autenticato ma senza i permessi necessari: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L24",
+      "livello": "e2e",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con login: l'utente resta autenticato",
+      "dato": ["@utente invia le credenziali e si autentica"],
+      "quando": ["@API restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L25",
+      "livello": "e2e",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con login: l'utente resta autenticato",
+      "dato": ["@utente invia le credenziali e si autentica"],
+      "quando": ["@API restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L26",
+      "livello": "unit",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con password con caratteri speciali, Unicode o spazi: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali con password con caratteri speciali, Unicode o spazi"],
+      "quando": ["@API non restituisce token o sessione"],
+      "allora": ["@utente vede lo stesso messaggio di errore e resta sulla pagina di login"]
+    },
+    {
+      "codice": "L27",
+      "livello": "api",
+      "citazione": "Con credenziali valide l'API restituisce token o sessione",
+      "titolo": "Con utente disabilitato, sospeso o non verificato: l'API risponde con errore",
+      "dato": ["@utente invia le credenziali con utente disabilitato,
