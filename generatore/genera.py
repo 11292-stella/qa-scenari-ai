@@ -15,6 +15,7 @@ from pathlib import Path
 import ollama
 from pydantic import BaseModel, ValidationError
 
+from generatore import PROGETTO
 from generatore.checklist import PuntoChecklist, leggi_checklist
 from generatore.controlli import controlla_segnaposto
 from generatore.schemas import schema_risposta
@@ -42,7 +43,7 @@ def testo_punti(punti: list[PuntoChecklist]) -> str:
 
 def prepara_prompt(versione: str, requisito: str, punti: list[PuntoChecklist]) -> str:
     """Legge prompts/<versione>.md e riempie i segnaposto."""
-    file_prompt = Path(f"prompts/{versione}.md")
+    file_prompt = PROGETTO / "prompts" / f"{versione}.md"
     modello_prompt = file_prompt.read_text(encoding="utf-8")
     controlla_segnaposto(modello_prompt, file_prompt.name, ["{REQUISITO}", "{PUNTI}"])
     return (modello_prompt
@@ -83,7 +84,7 @@ def main() -> None:
     Risposta = schema_risposta([p.codice for p in punti])
     prompt = prepara_prompt(args.prompt, requisito, punti)
 
-    uscita = Path("risultati") / args.prompt
+    uscita = PROGETTO / "risultati" / args.prompt
     uscita.mkdir(parents=True, exist_ok=True)
 
     print(f"Requisito: {percorso.name} | checklist: {len(punti)} punti | prompt: {args.prompt}")

@@ -19,6 +19,7 @@ from pathlib import Path
 
 import ollama
 
+from generatore import PROGETTO
 from generatore.checklist import PuntoChecklist, leggi_checklist
 from generatore.controlli import citazione_valida, controlla_segnaposto
 from generatore.genera import nome_checklist
@@ -45,7 +46,7 @@ def leggi_riferimento(nome_requisito: str) -> dict[str, int | None] | None:
     Esempio di riga di tag:  @negativo @e2e @L3 @riga5  →  {"L3": 5}
     Se manca il tag @riga, la riga attesa è None (si controlla solo la decisione).
     """
-    percorso = Path("riferimenti") / f"{nome_requisito}.feature"
+    percorso = PROGETTO / "riferimenti" / f"{nome_requisito}.feature"
     if not percorso.exists():
         return None
     attesi: dict[str, int | None] = {}
@@ -169,7 +170,7 @@ def main() -> None:
     punti = leggi_checklist(nome_checklist(testo))
     attesi = leggi_riferimento(percorso.stem)
 
-    file_prompt = Path(f"prompts/{args.prompt}_decidi.md")
+    file_prompt = PROGETTO / "prompts" / f"{args.prompt}_decidi.md"
     modello_prompt = file_prompt.read_text(encoding="utf-8")
     modo = "riga" if "{RIGHE}" in modello_prompt else "citazione"
     controlla_segnaposto(modello_prompt, file_prompt.name,
@@ -229,7 +230,7 @@ def main() -> None:
     if n > 1:
         print(f"Punti instabili: {len(instabili)}  →  {', '.join(instabili) or '-'}")
 
-    uscita = Path("risultati") / args.prompt
+    uscita = PROGETTO / "risultati" / args.prompt
     uscita.mkdir(parents=True, exist_ok=True)
     nome_file = f"{percorso.stem}_decisioni.json" if n == 1 else f"{percorso.stem}_decisioni_x{n}.json"
     file_json = uscita / nome_file

@@ -72,12 +72,26 @@ def schema_riga(numero_righe: int) -> type[BaseModel]:
     )
 
 
+# ---------- Passo B (un punto alla volta): lo scenario ----------
+
+def schema_scenario(livelli: tuple[str, ...]) -> type[BaseModel]:
+    """Lo scenario di UN punto: livello solo tra quelli ammessi per quel punto.
+
+    Niente codice e niente citazione: il codice lo sa già Python,
+    e la "citazione" è la riga scelta nel passo A.
+    """
+    LivelloPunto = Literal[livelli]  # es. Literal["unit", "api"]
+    altri_campi = {nome: c for nome, c in campi(ScenarioAI).items() if nome not in ("livello", "citazione")}
+    return create_model("ScenarioPunto", livello=(LivelloPunto, ...), **altri_campi)
+
+
 # ---------- Cosa usa Python dopo i controlli ----------
 
 class Scenario(ScenarioAI):
     """Scenario completo: quello dell'AI + codice + tipo copiato dalla checklist."""
     codice: str
     tipo: Tipo
+    citazione: str  # è una riga vera del requisito: niente lunghezza minima (anche "Max 20 caratteri." va bene)
 
 
 # ---------- Prova veloce: python -m generatore.schemas ----------

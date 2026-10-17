@@ -11,9 +11,10 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
+from generatore import PROGETTO
 from generatore.schemas import LIVELLI, TIPI
 
-CARTELLA = Path("checklist")
+CARTELLA = PROGETTO / "checklist"
 
 # | L15 | Spazi prima o dopo username/email | limite | unit, api |
 RIGA = re.compile(r"^\|\s*([A-Z]+\d+)\s*\|(.+?)\|(.+?)\|(.+?)\|\s*$")

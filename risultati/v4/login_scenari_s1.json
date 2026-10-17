@@ -1,0 +1,213 @@
+[
+  {
+    "livello": "e2e",
+    "citazione": "Con credenziali valide l'utente arriva alla dashboard.",
+    "titolo": "Login e accesso alla dashboard",
+    "dato": [
+      "utente con credenziali valide"
+    ],
+    "quando": [
+      "l'utente effettua il login con le credenziali valide"
+    ],
+    "allora": [
+      "l'utente viene portato alla dashboard"
+    ],
+    "codice": "L1",
+    "tipo": "positivo"
+  },
+  {
+    "livello": "api",
+    "citazione": "Il campo password nasconde i caratteri digitati.",
+    "titolo": "Password nascondita",
+    "dato": [
+      "utente inserisce password nella API"
+    ],
+    "quando": [
+      "API riceve password dall'utente"
+    ],
+    "allora": [
+      "API nasconde i caratteri della password"
+    ],
+    "codice": "L2",
+    "tipo": "positivo"
+  },
+  {
+    "livello": "e2e",
+    "citazione": "Con username o password errati compare lo stesso messaggio di errore e l'utente resta sulla pagina di login.",
+    "titolo": "Login con password errata",
+    "dato": [
+      "Username o password errati"
+    ],
+    "quando": [
+      "L'utente inserisce username e password errati"
+    ],
+    "allora": [
+      "Si visualizza lo stesso messaggio di errore e l'utente rimane sulla pagina di login"
+    ],
+    "codice": "L3",
+    "tipo": "negativo"
+  },
+  {
+    "livello": "e2e",
+    "citazione": "Con credenziali valide l'utente arriva alla dashboard.",
+    "titolo": "Utente inesistente: STESSO messaggio della password errata",
+    "dato": [
+      "Utente esistente con credenziali valide"
+    ],
+    "quando": [
+      "Utente tenta di accedere alla dashboard con credenziali valide"
+    ],
+    "allora": [
+      "Si riceve un messaggio di errore con il testo 'Password errata'"
+    ],
+    "codice": "L4",
+    "tipo": "sicurezza"
+  },
+  {
+    "livello": "unit",
+    "citazione": "Il bottone \"Accedi\" è disabilitato finché username o password sono vuoti o contengono solo spazi.",
+    "titolo": "Bottone Accedi disabilitato",
+    "dato": [
+      "Username ' ' e Password ' '"
+    ],
+    "quando": [
+      "Utente compila Username con solo spazi e Password con solo spazi"
+    ],
+    "allora": [
+      "Bottone Accedi è disabilitato"
+    ],
+    "codice": "L6",
+    "tipo": "limite"
+  },
+  {
+    "livello": "e2e",
+    "citazione": "Le pagine del gestionale (dashboard, prodotti, categorie, ordini) si aprono solo dopo il login: senza login l'utente viene riportato alla pagina di login.",
+    "titolo": "Pagina di login aperta senza login",
+    "dato": [
+      "Dashboard, Prodotti, Categorie, Ordini"
+    ],
+    "quando": [
+      "Utente tenta di accedere a una pagina del gestionale senza essere loggato"
+    ],
+    "allora": [
+      "Utente viene riportato alla pagina di login"
+    ],
+    "codice": "L9",
+    "tipo": "sicurezza"
+  },
+  {
+    "livello": "e2e",
+    "citazione": "Con il logout l'utente torna alla pagina di login e non può più aprire le pagine del gestionale.",
+    "titolo": "Logout e Indietro",
+    "dato": [
+      "utente",
+      "pagina gestionale"
+    ],
+    "quando": [
+      "utente fa logout",
+      "utente fa click indietro"
+    ],
+    "allora": [
+      "utente torna alla pagina di login",
+      "non può più accedere alle pagine del gestionale"
+    ],
+    "codice": "L10",
+    "tipo": "positivo"
+  },
+  {
+    "livello": "api",
+    "citazione": "Il login passa dall'API POST /api/auth/login, che restituisce un token se le credenziali sono valide e un errore 401 senza token se non lo sono.",
+    "titolo": "Login con credenziali non valide",
+    "dato": [
+      "utente inizia login con credenziali non valide"
+    ],
+    "quando": [
+      "utente invia login POST /api/auth/login"
+    ],
+    "allora": [
+      "API restituisce errore 401 senza token"
+    ],
+    "codice": "L11",
+    "tipo": "negativo"
+  },
+  {
+    "livello": "unit",
+    "citazione": "L'utente del ristorante accede al gestionale dalla pagina di login inserendo username e password.",
+    "titolo": "Login utente ristorante",
+    "dato": [
+      "utente accede al gestionale dalla pagina di login"
+    ],
+    "quando": [
+      "inserisce username e password"
+    ],
+    "allora": [
+      "la password è nascosta"
+    ],
+    "codice": "L13",
+    "tipo": "positivo"
+  },
+  {
+    "livello": "unit",
+    "citazione": "L'utente del ristorante accede al gestionale dalla pagina di login inserendo username e password.",
+    "titolo": "Login con username o email non valido",
+    "dato": [
+      "utente accede al gestionale dalla pagina di login"
+    ],
+    "quando": [
+      "inserisce username o email non validi"
+    ],
+    "allora": [
+      "la pagina di login non accetta l'input e mostra un messaggio di errore"
+    ],
+    "codice": "L14",
+    "tipo": "negativo"
+  },
+  {
+    "livello": "api",
+    "citazione": "Il campo password nasconde i caratteri digitati.",
+    "titolo": "Password non visibile",
+    "dato": [
+      "utente inserisce una password"
+    ],
+    "quando": [
+      "l'utente inserisce una password"
+    ],
+    "allora": [
+      "l'accesso viene negato"
+    ],
+    "codice": "L22",
+    "tipo": "sicurezza"
+  },
+  {
+    "livello": "api",
+    "citazione": "Il campo password nasconde i caratteri digitati.",
+    "titolo": "Password con caratteri speciali",
+    "dato": [
+      "password con caratteri speciali"
+    ],
+    "quando": [
+      "utente inserisce una password con caratteri speciali"
+    ],
+    "allora": [
+      "la password viene mostrata in modo non cifrato"
+    ],
+    "codice": "L26",
+    "tipo": "limite"
+  },
+  {
+    "livello": "api",
+    "citazione": "Il campo password nasconde i caratteri digitati.",
+    "titolo": "Password non visibile nei log",
+    "dato": [
+      "utente inserisce una password nel campo di input"
+    ],
+    "quando": [
+      "sistema nasconde i caratteri della password"
+    ],
+    "allora": [
+      "la password non appare in chiaro nei log"
+    ],
+    "codice": "L29",
+    "tipo": "sicurezza"
+  }
+]
