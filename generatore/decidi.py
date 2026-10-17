@@ -129,6 +129,16 @@ def esegui(punti, modo, modello_prompt, corpo, righe, attesi, stampa: bool) -> l
     return risultati
 
 
+def scarica_modello() -> None:
+    """Toglie il modello dalla memoria: al giro dopo Ollama lo ricarica da zero.
+
+    Serve perché le risposte cambiano soprattutto tra un caricamento e l'altro
+    (Ollama scarica il modello dopo 5 minuti di inattività): se lo lasciassimo
+    caricato, tutti i giri sembrerebbero stabili anche quando non lo sono.
+    """
+    ollama.generate(model=MODELLO, keep_alive=0)
+
+
 def conta(risultati: list[dict]) -> tuple[int, int]:
     """(decisioni giuste sì/no, giuste anche nella riga)"""
     decisioni = sum(r["finale"] == r["atteso"] for r in risultati)
@@ -148,7 +158,8 @@ def main() -> None:
     parser.add_argument("requisito", help="es. requisiti/login.txt")
     parser.add_argument("--prompt", default="v3", help="versione del prompt (usa prompts/<versione>_decidi.md)")
     parser.add_argument("--ripetizioni", type=int, default=1,
-                        help="quante volte ripetere tutto: con più di 1 mostra media e punti instabili")
+                        help="quante volte ripetere tutto (ricaricando il modello ogni volta): "
+                             "con più di 1 mostra media e punti instabili")
     args = parser.parse_args()
 
     percorso = Path(args.requisito)
@@ -174,6 +185,8 @@ def main() -> None:
     inizio = time.perf_counter()
     for giro in range(1, n + 1):
         if n > 1:
+            if giro > 1:
+                scarica_modello()
             print(f"Giro {giro}/{n}...", end=" ", flush=True)
         risultati = esegui(punti, modo, modello_prompt, corpo, righe, attesi, stampa=(n == 1))
         giri.append(risultati)
