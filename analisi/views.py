@@ -1,4 +1,6 @@
 """Una sola pagina: GET mostra il form, POST lancia l'analisi e mostra i risultati."""
+import base64
+
 import httpx
 from django.shortcuts import render
 
@@ -35,5 +37,9 @@ def home(request):
         "form": form,
         "analisi": risultato,
         "numero_coperti": sum(d.coperto for d in risultato.decisioni),
-        "nome_file": f"{dati['titolo'].strip().lower().replace(' ', '_') or 'scenari'}.feature",
+        "schede": risultato.schede(),
+        "framework": ["Gherkin", "Playwright", "Robot", "Appium"],
+        # lo zip va dentro il link stesso (data:...;base64), come il .feature: niente vista in più
+        "zip_base64": base64.b64encode(risultato.zip_scheletri()).decode(),
+        "nome_file": f"{dati['titolo'].strip().lower().replace(' ', '_') or 'scenari'}",
     })

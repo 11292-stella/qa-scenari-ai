@@ -1,0 +1,33 @@
+{% extends "analisi/base.html" %}
+{% block contenuto %}
+<div class="card">
+  <h1>Nuova analisi</h1>
+  <p class="sotto">Scrivi il requisito, una regola per riga. Il modello controlla ogni punto della checklist:
+     se il requisito ne parla scrive uno scenario, altrimenti lo segnala come domanda aperta.</p>
+
+  <form method="post" id="form-analisi">
+    {% csrf_token %}
+    {% if form.non_field_errors %}<ul class="errore">{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+
+    {{ form.titolo.label_tag }} {{ form.titolo }} {{ form.titolo.errors }}
+    {{ form.requisito.label_tag }} {{ form.requisito }} {{ form.requisito.errors }}
+
+    <div class="tre">
+      <div>{{ form.checklist.label_tag }} {{ form.checklist }}</div>
+      <div>{{ form.prompt_decidi.label_tag }} {{ form.prompt_decidi }}</div>
+      <div>{{ form.prompt_scenario.label_tag }} {{ form.prompt_scenario }}</div>
+    </div>
+
+    <button type="submit" id="avvia">Analizza</button>
+    <p class="attesa" id="attesa">⏳ Analisi in corso… di solito 30–60 secondi. Non chiudere la pagina.</p>
+  </form>
+</div>
+
+<script>
+  // Mentre il modello lavora: bottone disattivato e messaggio di attesa
+  document.getElementById("form-analisi").addEventListener("submit", function () {
+    document.getElementById("avvia").disabled = true;
+    document.getElementById("attesa").style.display = "block";
+  });
+</script>
+{% endblock %}

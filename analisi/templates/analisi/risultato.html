@@ -1,0 +1,127 @@
+{% extends "analisi/base.html" %}
+{% block titolo %}{{ analisi.titolo }} – QA Scenari AI<script>
+  // Linguette: mostra il <pre> del framework scelto, solo dentro la sua scheda
+  document.querySelectorAll(".linguetta[data-vista]").forEach(function (bottone) {
+    bottone.addEventListener("click", function () {
+      var scheda = document.getElementById("scheda-" + bottone.dataset.scheda);
+      scheda.querySelectorAll("pre").forEach(function (pre) {
+        pre.hidden = pre.dataset.vista !== bottone.dataset.vista;
+      });
+      scheda.querySelectorAll(".linguetta[data-vista]").forEach(function (b) {
+        b.classList.toggle("attiva", b === bottone);
+      });
+    });
+  });
+  // Copia: copia il testo della linguetta aperta
+  document.querySelectorAll(".linguetta.copia").forEach(function (bottone) {
+    bottone.addEventListener("click", function () {
+      var aperto = document.querySelector("#scheda-" + bottone.dataset.scheda + " pre:not([hidden])");
+      navigator.clipboard.writeText(aperto.textContent).then(function () {
+        bottone.textContent = "Copiato ✓";
+        setTimeout(function () { bottone.textContent = "Copia"; }, 1500);
+      });
+    });
+  });
+</script>
+{% endblock %}
+{% block contenuto %}
+<div class="card">
+  <h1>{{ analisi.titolo }}</h1>
+  <p class="sotto">Checklist <b>{{ analisi.checklist }}</b> · prompt {{ analisi.prompt_decidi }} + {{ analisi.prompt_scenario }}
+     · {{ analisi.secondi|floatformat:1 }} secondi</p>
+  <a class="bottone" download="{{ nome_file }}.feature"
+     href="data:text/plain;charset=utf-8,{{ analisi.feature|urlencode }}">Scarica il .feature</a>
+  {% if analisi.scenari %}
+  <a class="bottone" download="{{ nome_file }}_scheletri.zip"
+     href="data:application/zip;base64,{{ zip_base64 }}">Scarica gli scheletri (.zip)</a>
+  {% endif %}
+  <a class="bottone secondario" href="{% url 'home' %}">Nuova analisi</a>
+</div>
+
+<div class="avviso">Gli scenari sono una <b>bozza</b> scritta da un modello piccolo: controllali uno per uno prima di usarli.</div>
+
+<div class="numeri" style="margin-bottom:18px">
+  <div class="numero"><b>{{ analisi.righe|length }}</b><span>righe del requisito</span></div>
+  <div class="numero"><b>{{ analisi.decisioni|length }}</b><span>punti della checklist</span></div>
+  <div class="numero"><b>{{ analisi.scenari|length }}</b><span>scenari scritti</span></div>
+  <div class="numero"><b>{{ analisi.domande|length }}</b><span>domande aperte</span></div>
+</div>
+
+<div class="card">
+  <h2>Il requisito, riga per riga</h2>
+  <ol class="righe">{% for riga in analisi.righe %}<li>{{ riga }}</li>{% endfor %}</ol>
+</div>
+
+<div class="card">
+  <h2>Scenari ({{ schede|length }})</h2>
+  <p class="sotto">Per ogni scenario: il Gherkin e lo scheletro di codice. I metodi sono TODO che falliscono
+     finché non li completi.</p>
+  {% for scheda in schede %}
+  <div class="scheda" id="scheda-{{ forloop.counter }}">
+    <div class="scheda-testa">
+      <b>{{ scheda.scenario.codice }}</b> {{ scheda.scenario.titolo }}
+      <span class="etichetta">{{ scheda.scenario.tipo }}</span>
+      <span class="etichetta">{{ scheda.scenario.livello }}</span>
+    </div>
+    <div class="linguette">
+      {% for nome in framework %}
+      <button type="button" class="linguetta{% if forloop.first %} attiva{% endif %}"
+              data-scheda="{{ forloop.parentloop.counter }}" data-vista="{{ nome }}">{{ nome }}</button>
+      {% endfor %}
+      <button type="button" class="linguetta copia" data-scheda="{{ forloop.counter }}">Copia</button>
+    </div>
+    <pre data-vista="Gherkin">{{ scheda.gherkin }}</pre>
+    {% for nome, testo in scheda.codice.items %}
+    <pre data-vista="{{ nome }}" hidden>{{ testo }}</pre>
+    {% endfor %}
+  </div>
+  {% empty %}
+  <p>Nessuno scenario: il requisito non copre nessun punto della checklist.</p>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h2>Domande aperte ({{ analisi.domande|length }})</h2>
+  <p class="sotto">Punti della checklist di cui il requisito non parla: da chiarire con chi ha scritto il requisito.</p>
+  <ul>{% for domanda in analisi.domande %}<li>{{ domanda }}</li>{% empty %}<li>Nessuna.</li>{% endfor %}</ul>
+</div>
+
+<div class="card">
+  <h2>Decisioni del passo A ({{ numero_coperti }} punti coperti)</h2>
+  <table>
+    <tr><th>Punto</th><th>Cosa controllare</th><th>Tipo</th><th>Livelli</th><th>Riga</th></tr>
+    {% for d in analisi.decisioni %}
+    <tr class="{% if d.coperto %}coperto{% endif %}">
+      <td>{{ d.codice }}</td><td>{{ d.cosa }}</td>
+      <td><span class="etichetta">{{ d.tipo }}</span></td>
+      <td>{{ d.livelli|join:", " }}</td>
+      <td>{% if d.coperto %}{{ d.riga }}{% else %}–{% endif %}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</div>
+<script>
+  // Linguette: mostra il <pre> del framework scelto, solo dentro la sua scheda
+  document.querySelectorAll(".linguetta[data-vista]").forEach(function (bottone) {
+    bottone.addEventListener("click", function () {
+      var scheda = document.getElementById("scheda-" + bottone.dataset.scheda);
+      scheda.querySelectorAll("pre").forEach(function (pre) {
+        pre.hidden = pre.dataset.vista !== bottone.dataset.vista;
+      });
+      scheda.querySelectorAll(".linguetta[data-vista]").forEach(function (b) {
+        b.classList.toggle("attiva", b === bottone);
+      });
+    });
+  });
+  // Copia: copia il testo della linguetta aperta
+  document.querySelectorAll(".linguetta.copia").forEach(function (bottone) {
+    bottone.addEventListener("click", function () {
+      var aperto = document.querySelector("#scheda-" + bottone.dataset.scheda + " pre:not([hidden])");
+      navigator.clipboard.writeText(aperto.textContent).then(function () {
+        bottone.textContent = "Copiato ✓";
+        setTimeout(function () { bottone.textContent = "Copia"; }, 1500);
+      });
+    });
+  });
+</script>
+{% endblock %}

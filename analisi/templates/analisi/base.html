@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titolo %}QA Scenari AI{% endblock %}</title>
+  <style>
+    :root { --sfondo:#f6f5f2; --carta:#fff; --testo:#1f2328; --tenue:#6a737d; --bordo:#e2e0da;
+            --accento:#2f6f5e; --accento-chiaro:#e3f0ec; --rosso:#b42318; --giallo:#fff4d6; }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, "Segoe UI", sans-serif; background:var(--sfondo); color:var(--testo); }
+    header { background:var(--carta); border-bottom:1px solid var(--bordo); padding:14px 24px; }
+    header a { color:var(--testo); text-decoration:none; font-weight:700; }
+    header span { color:var(--tenue); margin-left:8px; font-size:14px; }
+    main { max-width:980px; margin:24px auto; padding:0 16px; }
+    .card { background:var(--carta); border:1px solid var(--bordo); border-radius:10px; padding:20px; margin-bottom:18px; }
+    h1 { font-size:22px; margin:0 0 4px; } h2 { font-size:17px; margin:0 0 12px; }
+    .sotto { color:var(--tenue); margin:0 0 16px; font-size:14px; }
+    label { display:block; font-weight:600; margin:14px 0 6px; font-size:14px; }
+    input, textarea, select { width:100%; padding:9px 10px; border:1px solid var(--bordo); border-radius:7px; font:inherit; background:#fff; }
+    textarea { font-family: ui-monospace, Consolas, monospace; font-size:14px; }
+    .tre { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; }
+    @media (max-width:700px) { .tre { grid-template-columns:1fr; } }
+    button, .bottone { margin-top:18px; background:var(--accento); color:#fff; border:0; border-radius:7px;
+             padding:10px 18px; font:inherit; font-weight:600; cursor:pointer; text-decoration:none; display:inline-block; }
+    button:disabled { opacity:.6; cursor:wait; }
+    .bottone.secondario { background:var(--carta); color:var(--accento); border:1px solid var(--accento); }
+    .errore, .errorlist { color:var(--rosso); font-size:14px; padding-left:0; list-style:none; }
+    .attesa { display:none; margin-top:12px; color:var(--tenue); font-size:14px; }
+    .numeri { display:grid; grid-template-columns:repeat(4, 1fr); gap:12px; }
+    @media (max-width:700px) { .numeri { grid-template-columns:repeat(2, 1fr); } }
+    .numero { background:var(--carta); border:1px solid var(--bordo); border-radius:10px; padding:14px; }
+    .numero b { display:block; font-size:26px; } .numero span { color:var(--tenue); font-size:13px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; }
+    th, td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--bordo); vertical-align:top; }
+    th { color:var(--tenue); font-weight:600; }
+    tr.coperto td { background:var(--accento-chiaro); }
+    .etichetta { display:inline-block; font-size:12px; padding:1px 7px; border-radius:20px; background:#eee; }
+    ol.righe { margin:0; padding-left:22px; } ol.righe li { margin:4px 0; }
+    pre { background:#1f2328; color:#e6edf3; padding:16px; border-radius:8px; overflow-x:auto; font-size:13px; line-height:1.5; }
+    .scheda { border:1px solid var(--bordo); border-radius:8px; padding:12px; margin-bottom:14px; }
+    .scheda-testa { margin-bottom:10px; } .scheda-testa .etichetta { margin-left:6px; }
+    .linguette { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:8px; }
+    .linguetta { margin:0; padding:6px 12px; font-size:13px; background:var(--carta); color:var(--testo);
+                 border:1px solid var(--bordo); border-radius:20px; font-weight:600; }
+    .linguetta.attiva { background:var(--accento); color:#fff; border-color:var(--accento); }
+    .linguetta.copia { margin-left:auto; color:var(--accento); }
+    .scheda pre { margin:0; }
+    .avviso { background:var(--giallo); border-radius:8px; padding:10px 14px; font-size:14px; margin-bottom:18px; }
+  </style>
+</head>
+<body>
+  <header><a href="{% url 'home' %}">QA Scenari AI</a><span>requisito → scenari Gherkin + domande aperte, con Ollama in locale</span></header>
+  <main>{% block contenuto %}{% endblock %}</main>
+</body>
+</html>
