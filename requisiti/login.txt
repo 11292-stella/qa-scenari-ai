@@ -1,0 +1,11 @@
+Titolo: Login al gestionale
+Checklist: login
+
+L'utente del ristorante accede al gestionale dalla pagina di login inserendo username e password.
+Il campo password nasconde i caratteri digitati.
+Il bottone "Accedi" è disabilitato finché username o password sono vuoti o contengono solo spazi.
+Con credenziali valide l'utente arriva alla dashboard.
+Con username o password errati compare lo stesso messaggio di errore e l'utente resta sulla pagina di login.
+Le pagine del gestionale (dashboard, prodotti, categorie, ordini) si aprono solo dopo il login: senza login l'utente viene riportato alla pagina di login.
+Con il logout l'utente torna alla pagina di login e non può più aprire le pagine del gestionale.
+Il login passa dall'API POST /api/auth/login, che restituisce un token se le credenziali sono valide e un errore 401 senza token se non lo sono.
