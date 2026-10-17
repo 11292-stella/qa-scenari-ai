@@ -1,0 +1,216 @@
+﻿Ecco le scenari Gherkin in italiano per il requisito e la checklist, con i [K
+tag tipo e livello come richiesto. Se un punto non pu├▓ essere verificato o [K
+non viene menzionato, ho scritto una domanda aperta:
+
+### @negativo @api @L1
+**Scenario:** Login con credenziali valide porta all'area riservata.
+**Descrizione:** L'utente inserisce username e password valide e arriva all[3D[K
+alla dashboard del gestionale.
+**Tags:** @negativo, @api, @L1
+
+### @negativo @api @L10
+**Scenario:** Il logout chiude la sessione (anche con il tasto indietro del[3D[K
+del browser).
+**Descrizione:** L'utente chiude la sessione facendo logout e si sposta all[3D[K
+alla pagina di login. Non si pu├▓ pi├╣ accedere alle pagine del gestionale.
+**Tags:** @negativo, @api, @L10
+
+### @negativo @api @L11
+**Scenario:** Sessione o token scaduto: si torna alla pagina di login.
+**Descrizione:** L'utente accede con le credenziali valide, ma il token o l[1D[K
+la sessione scade e viene automaticamente riportato alla pagina di login.
+**Tags:** @negativo, @api, @L11
+
+### @limit @unit @L16
+**Scenario:** Invio del form premendo Invio dalla tastiera.
+**Descrizione:** L'utente premisce il tasto Invio mentre invia i campi di l[1D[K
+login.
+**Tags:** @limit, @unit, @L16
+
+### @negativo @api @L28
+**Scenario:** Tentativo di injection nei campi di login.
+**Descrizione:** L'utente inserisce dati di login che contengono invasi (es[3D[K
+(es. "admin' OR '1'='1") e tenta di accedere.
+**Tags:** @negativo, @api, @L28
+
+### @accessibilit├á @unit @L30
+**Scenario:** Login con sessione gi├á attiva.
+**Descrizione:** L'utente accede con le credenziali valide, chiude la sessi[5D[K
+sessione, chiude il browser e riapre il sito. Si autentica ancora con le st[2D[K
+stesse credenziali.
+**Tags:** @accessibilit├á, @unit, @L30
+
+### @limit @unit @L23
+**Scenario:** Utente autenticato ma senza i permessi necessari.
+**Descrizione:** L'utente autentica con le credenziali valide, ma non ha i [K
+permessi necessari per accedere alle pagine del gestionale.
+**Tags:** @limit, @unit, @L23
+
+### @negativo @api @L29
+**Scenario:** La password non compare in chiaro nei log, nell'URL o nelle r[1D[K
+risposte dell'API.
+**Descrizione:** L'utente inserisce una password con caratteri speciali e n[1D[K
+non vengono visualizzati nei log, nell'URL o nelle risposte dell'API.
+**Tags:** @negativo, @api, @L29
+
+### @negativo @api @L32
+**Scenario:** Messaggi di errore non accessibili da tastiera e screen reade[5D[K
+reader.
+**Descrizione:** L'utente accede con le credenziali valide, ma riceve messa[5D[K
+messaggi di errore che non sono accessibili da tastiera o screen reader.
+**Tags:** @negativo, @api, @L32
+
+### @negativo @api @L3
+**Scenario:** Con password errata: messaggio di errore, si resta sulla pagi[4D[K
+pagina di login.
+**Descrizione:** L'utente inserisce una password errata e riceve lo stesso [K
+messaggio di errore che si trova sulla pagina di login.
+**Tags:** @negativo, @api, @L3
+
+### @negativo @api @L5
+**Scenario:** Con credenziali errate l'API risponde con errore e senza toke[4D[K
+token.
+**Descrizione:** L'utente inserisce username o password errate e l'API risp[4D[K
+risponde con errore senza token.
+**Tags:** @negativo, @api, @L5
+
+### @negativo @api @L21
+**Scenario:** Errore del server (es. HTTP 500): messaggio gestito correttam[9D[K
+correttamente.
+**Descrizione:** L'utente accede con le credenziali valide, ma l'API rispon[6D[K
+risponde con un errore del server (es. HTTP 500) e gestisce il messaggio di[2D[K
+di errore correttamente.
+**Tags:** @negativo, @api, @L21
+
+### @negativo @api @L22
+**Scenario:** Token non valido, manipolato o malformato: accesso negato.
+**Descrizione:** L'utente accede con un token non valido, manipolato o malf[4D[K
+malformato e non viene autorizzato.
+**Tags:** @negativo, @api, @L22
+
+### @negativo @e2e @L24
+**Scenario:** Ricaricando la pagina dopo il login si resta autenticati.
+**Descrizione:** L'utente accede con le credenziali valide, ricarica la pag[3D[K
+pagina e continua a essere autenticato.
+**Tags:** @negativo, @e2e, @L24
+
+### @limit @unit @L17
+**Scenario:** Doppio clic sul pulsante di login: nessuna richiesta o azione[6D[K
+azione duplicata.
+**Descrizione:** L'utente doppia clic sul pulsante di login e non viene ric[3D[K
+richiesta o azione duplicata.
+**Tags:** @limit, @unit, @L17
+
+### @limit @unit @L18
+**Scenario:** Durante l'invio il pulsante si disabilita o compare un carica[6D[K
+caricamento, se previsto.
+**Descrizione:** L'utente invia i campi di login e il pulsante si disabilit[9D[K
+disabilita o compare un caricamento.
+**Tags:** @limit, @unit, @L18
+
+### @negativo @api @L20
+**Scenario:** Risposta lenta del server: l'attesa ├¿ gestita correttamente.
+**Descrizione:** L'utente accede con le credenziali valide, ma la risposta [K
+dell'API ├¿ lenta e l'attesa ├¿ gestita correttamente.
+**Tags:** @negativo, @api, @L20
+
+### @negativo @api @L19
+**Scenario:** Errore di rete o server non raggiungibile: messaggio comprens[8D[K
+comprensibile.
+**Descrizione:** L'utente accede con le credenziali valide, ma la risposta [K
+dell'API ├¿ stata bloccata da un errore di rete o dal server non raggiungibi[11D[K
+raggiungibile e riceve un messaggio comprensibile.
+**Tags:** @negativo, @api, @L19
+
+### @positivo @e2e @L9
+**Scenario:** Le pagine protette senza login riportano alla pagina di login[5D[K
+login.
+**Descrizione:** L'utente cerca di accedere a una pagina protetta senza log[3D[K
+login e viene riportato alla pagina di login.
+**Tags:** @positivo, @e2e, @L9
+
+### @negativo @api @L13
+**Scenario:** La password nel campo ├¿ nascosta.
+**Descrizione:** L'utente inserisce username e password e la password ├¿ nas[3D[K
+nascosta dal sistema.
+**Tags:** @negativo, @api, @L13
+
+### @negativo @unit @L14
+**Scenario:** Email o username con formato non valido.
+**Descrizione:** L'utente inserisce un username o una email con un formato [K
+non valido e riceve un errore.
+**Tags:** @negativo, @unit, @L14
+
+### @limit @unit @L15
+**Scenario:** Spazi prima o dopo username/email.
+**Descrizione:** L'utente inserisce un username o una email con spazi prima[5D[K
+prima o dopo e riceve un errore.
+**Tags:** @limit, @unit, @L15
+
+### @positivo @unit @L12
+**Scenario:** Blocco o attesa dopo troppi tentativi errati.
+**Descrizione:** L'utente prova a accedere con le credenziali errate pi├╣ vo[2D[K
+volte prima di essere bloccato o avvisato.
+**Tags:** @positivo, @unit, @L12
+
+### @negativo @api @L1
+**Scenario:** Con credenziali valide l'API restituisce token o sessione.
+**Descrizione:** L'utente accede con le credenziali valide e l'API non rest[4D[K
+restituisce token o sessione.
+**Tags:** @negativo, @api, @L1
+
+### @positivo @e2e @L6
+**Scenario:** Campi vuoti, uno solo compilato o solo spazi: non si pu├▓ invi[4D[K
+inviare.
+**Descrizione:** L'utente inserisce un campo vuoto, uno solo compilato o so[2D[K
+solo spazi e non pu├▓ inviare il form.
+**Tags:** @positivo, @e2e, @L6
+
+### @negativo @unit @L1
+**Scenario:** Con credenziali valide l'API restituisce token o sessione.
+**Descrizione:** L'utente accede con le credenziali valide e l'API non rest[4D[K
+restituisce token o sessione.
+**Tags:** @negativo, @unit, @L1
+
+### @negativo @unit @L12
+**Scenario:** Blocco o attesa dopo troppi tentativi errati.
+**Descrizione:** L'utente provoca un blocco o una attesa dopo troppi tentat[6D[K
+tentativi errati e riceve un messaggio di errore.
+**Tags:** @negativo, @unit, @L12
+
+### @negativo @api @L25
+**Scenario:** Apertura di una pagina protetta in una seconda scheda.
+**Descrizione:** L'utente accede con le credenziali valide, apre una nuova [K
+scheda e cerca di accedere a una pagina protetta, ma non viene autorizzato.[12D[K
+autorizzato.
+**Tags:** @negativo, @api, @L25
+
+### @limit @unit @L23
+**Scenario:** Utente autenticato ma senza i permessi necessari.
+**Descrizione:** L'utente autentica con le credenziali valide, ma non ha i [K
+permessi necessari per accedere alle pagine del gestionale.
+**Tags:** @limit, @unit, @L23
+
+### @negativo @api @L11
+**Scenario:** Sessione o token scaduto: si torna alla pagina di login.
+**Descrizione:** L'utente autentica con le credenziali valide, ma il token [K
+o la sessione scade e viene automaticamente riportato alla pagina di login.[6D[K
+login.
+**Tags:** @negativo, @api, @L11
+
+### @negativo @api @L26
+**Scenario:** Password con caratteri speciali, Unicode o spazi, se ammessi [K
+dal requisito.
+**Descrizione:** L'utente inserisce una password con caratteri speciali, Un[2D[K
+Unicode o spazi e non viene autorizzato.
+**Tags:** @negativo, @api, @L26
+
+### @negativo @api @L27
+**Scenario:** Accesso con account disabilitato, sospeso o non verificato.
+**Descrizione:** L'utente autentica con le credenziali valide, ma l'account[9D[K
+l'account ├¿ disabilitato, sospeso o non verificato e non viene autorizzato.[12D[K
+autorizzato.
+**Tags:** @negativo, @api, @L27
+
+### @negativo @api @L28
+**Scenario:** Tentativo di injection nei campi di login.
