@@ -7,6 +7,7 @@ Ogni riga della tabella diventa un PuntoChecklist:
 La checklist la scrivo io a mano, quindi anche lei va controllata:
 tipi e livelli solo dalle liste chiuse di schemas.py, nessun codice ripetuto.
 """
+
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -18,6 +19,7 @@ CARTELLA = PROGETTO / "checklist"
 
 # | L15 | Spazi prima o dopo username/email | limite | unit, api |
 RIGA = re.compile(r"^\|\s*([A-Z]+\d+)\s*\|(.+?)\|(.+?)\|(.+?)\|\s*$")
+INIZIO_PUNTO = re.compile(r"^\|\s*[A-Z]+\d+\s*\|")   # una riga che "vuole" essere un punto
 
 
 @dataclass(frozen=True)
@@ -34,9 +36,14 @@ def leggi_checklist(nome: str) -> list[PuntoChecklist]:
     punti: list[PuntoChecklist] = []
     errori: list[str] = []
 
-    for numero, riga in enumerate(percorso.read_text(encoding="utf-8").splitlines(), start=1):
+    for numero, riga in enumerate(
+        percorso.read_text(encoding="utf-8").splitlines(), start=1
+    ):
         trovata = RIGA.match(riga.strip())
         if not trovata:
+            if INIZIO_PUNTO.match(riga.strip()):
+                # inizia con un codice ma non ha le 4 colonne: errore, non la salto in silenzio
+                errori.append(f"riga {numero}: servono 4 colonne (codice | cosa | tipo | livello): {riga.strip()}")
             continue  # titolo, regole, intestazione della tabella...
 
         codice, cosa, tipo, livelli = (parte.strip() for parte in trovata.groups())
@@ -46,7 +53,9 @@ def leggi_checklist(nome: str) -> list[PuntoChecklist]:
             errori.append(f"riga {numero} ({codice}): tipo '{tipo}' non ammesso")
         for livello in livelli:
             if livello not in LIVELLI:
-                errori.append(f"riga {numero} ({codice}): livello '{livello}' non ammesso")
+                errori.append(
+                    f"riga {numero} ({codice}): livello '{livello}' non ammesso"
+                )
         if any(p.codice == codice for p in punti):
             errori.append(f"riga {numero}: codice '{codice}' ripetuto")
 
