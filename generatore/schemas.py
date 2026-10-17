@@ -55,6 +55,23 @@ def schema_risposta(codici: list[str]) -> type[BaseModel]:
     )
 
 
+# ---------- Passo A (un punto alla volta): il requisito ne parla? ----------
+
+class Decisione(BaseModel):
+    """Risposta del passo A. Prima la prova (citazione), poi il verdetto."""
+    citazione: str = Field(description="Frase copiata dal requisito, oppure stringa vuota se non ne parla")
+    ne_parla: bool
+
+
+def schema_riga(numero_righe: int) -> type[BaseModel]:
+    """Passo A con righe numerate: l'AI sceglie SOLO un numero di riga (0 = nessuna riga ne parla)."""
+    Riga = Literal[tuple(range(numero_righe + 1))]  # es. Literal[0, 1, 2, ..., 8]
+    return create_model(
+        "DecisioneRiga",
+        riga=(Riga, Field(description="Numero della riga che parla del punto, 0 se nessuna")),
+    )
+
+
 # ---------- Cosa usa Python dopo i controlli ----------
 
 class Scenario(ScenarioAI):

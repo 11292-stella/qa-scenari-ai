@@ -1,0 +1,258 @@
+[
+  {
+    "codice": "L1",
+    "finale": "scenario",
+    "atteso": "scenario",
+    "citazione_vera": true,
+    "citazione": "Con credenziali valide l'utente arriva alla dashboard.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L2",
+    "finale": "INVENTA",
+    "atteso": "scenario",
+    "citazione_vera": false,
+    "citazione": "Con credenziali valide l'API restituisce token o sessione",
+    "ne_parla": true
+  },
+  {
+    "codice": "L3",
+    "finale": "scenario",
+    "atteso": "scenario",
+    "citazione_vera": true,
+    "citazione": "Con username o password errati compare lo stesso messaggio di errore e l'utente resta sulla pagina di login.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L4",
+    "finale": "scenario",
+    "atteso": "scenario",
+    "citazione_vera": true,
+    "citazione": "Con username o password errati compare lo stesso messaggio di errore e l'utente resta sulla pagina di login.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L5",
+    "finale": "INVENTA",
+    "atteso": "scenario",
+    "citazione_vera": false,
+    "citazione": "Con credenziali errate l'API risponde con errore e senza token",
+    "ne_parla": true
+  },
+  {
+    "codice": "L6",
+    "finale": "scenario",
+    "atteso": "scenario",
+    "citazione_vera": true,
+    "citazione": "Il bottone \"Accedi\" è disabilitato finché username o password sono vuoti o contengono solo spazi.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L7",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "L'utente del ristorante accede al gestionale dalla pagina di login inserendo username e password.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L8",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": false,
+    "citazione": "Lunghezza massima dei campi",
+    "ne_parla": false
+  },
+  {
+    "codice": "L9",
+    "finale": "domanda",
+    "atteso": "scenario",
+    "citazione_vera": true,
+    "citazione": "Con il logout l'utente torna alla pagina di login e non può più aprire le pagine del gestionale.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L10",
+    "finale": "scenario",
+    "atteso": "scenario",
+    "citazione_vera": true,
+    "citazione": "Con il logout l'utente torna alla pagina di login e non può più aprire le pagine del gestionale.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L11",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con il logout l'utente torna alla pagina di login e non può più aprire le pagine del gestionale.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L12",
+    "finale": "scenario",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con username o password errati compare lo stesso messaggio di errore e l'utente resta sulla pagina di login.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L13",
+    "finale": "scenario",
+    "atteso": "scenario",
+    "citazione_vera": true,
+    "citazione": "Il campo password nasconde i caratteri digitati.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L14",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "L'utente del ristorante accede al gestionale dalla pagina di login inserendo username e password.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L15",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con username o password errati compare lo stesso messaggio di errore e l'utente resta sulla pagina di login.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L16",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Il bottone \"Accedi\" è disabilitato finché username o password sono vuoti o contengono solo spazi.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L17",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con il logout l'utente torna alla pagina di login e non può più aprire le pagine del gestionale.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L18",
+    "finale": "scenario",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Il bottone 'Accedi' è disabilitato finché username o password sono vuoti o contengono solo spazi.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L19",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": false,
+    "citazione": "Errore di rete o server non raggiungibile: messaggio comprensibile",
+    "ne_parla": false
+  },
+  {
+    "codice": "L20",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "L'utente del ristorante accede al gestionale dalla pagina di login inserendo username e password.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L21",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": false,
+    "citazione": "Errore del server (es. HTTP 500): messaggio gestito correttamente",
+    "ne_parla": false
+  },
+  {
+    "codice": "L22",
+    "finale": "INVENTA",
+    "atteso": "domanda",
+    "citazione_vera": false,
+    "citazione": "Token non valido, manipolato o malformato: accesso negato",
+    "ne_parla": true
+  },
+  {
+    "codice": "L23",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con credenziali valide l'utente arriva alla dashboard.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L24",
+    "finale": "INVENTA",
+    "atteso": "domanda",
+    "citazione_vera": false,
+    "citazione": "Con credenziali valide l'utente arriva alla dashboard. Con il logout l'utente torna alla pagina di login e non può più aprire le pagine del gestionale.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L25",
+    "finale": "scenario",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Le pagine del gestionale (dashboard, prodotti, categorie, ordini) si aprono solo dopo il login: senza login l'utente viene riportato alla pagina di login.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L26",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con credenziali valide l'utente arriva alla dashboard.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L27",
+    "finale": "scenario",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con username o password errati compare lo stesso messaggio di errore e l'utente resta sulla pagina di login.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L28",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con credenziali valide l'utente arriva alla dashboard.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L29",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Le pagine del gestionale (dashboard, prodotti, categorie, ordini) si aprono solo dopo il login: senza login l'utente viene riportato alla pagina di login.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L30",
+    "finale": "domanda",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con il logout l'utente torna alla pagina di login e non può più aprire le pagine del gestionale.",
+    "ne_parla": false
+  },
+  {
+    "codice": "L31",
+    "finale": "scenario",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con il logout l'utente torna alla pagina di login e non può più aprire le pagine del gestionale.",
+    "ne_parla": true
+  },
+  {
+    "codice": "L32",
+    "finale": "scenario",
+    "atteso": "domanda",
+    "citazione_vera": true,
+    "citazione": "Con username o password errati compare lo stesso messaggio di errore e l'utente resta sulla pagina di login.",
+    "ne_parla": true
+  }
+]

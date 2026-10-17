@@ -187,6 +187,7 @@ python -m generatore.valuta --prompt v1
 | 17/10/2026 | Requisito e riferimento del login con tag `@tipo @livello @codice` | I codici assenti dal riferimento diventano le domande attese |
 | 17/10/2026 | Prova a mano del prompt v0 (testo libero) | Passare il prompt come argomento da PowerShell non funziona (a capo e virgolette) → `prova_v0.py` con la libreria `ollama` |
 | 17/10/2026 | Risultato del prompt v0 | 7/9 punti trovati, **0 domande aperte su 23**, ~20 scenari inventati, tipi sbagliati, tag inventato `@limit`, doppioni, 2 significati ribaltati, risposta tagliata → servono schema, citazione obbligatoria e controlli |
+| 17/10/2026 | Prompt v1 con schema JSON, tutti i punti insieme | Formato e livelli ok, ma risposta tagliata a L27 (91 s), 0 domande, **0/27 citazioni vere** (copiava una frase della checklist), ripetizioni, passi con "@utente" → strategia "un punto alla volta" (prompt chaining) |
 
 ---
 

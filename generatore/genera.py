@@ -16,6 +16,7 @@ import ollama
 from pydantic import BaseModel, ValidationError
 
 from generatore.checklist import PuntoChecklist, leggi_checklist
+from generatore.controlli import controlla_segnaposto
 from generatore.schemas import schema_risposta
 
 MODELLO = "qwen2.5:3b"
@@ -41,7 +42,9 @@ def testo_punti(punti: list[PuntoChecklist]) -> str:
 
 def prepara_prompt(versione: str, requisito: str, punti: list[PuntoChecklist]) -> str:
     """Legge prompts/<versione>.md e riempie i segnaposto."""
-    modello_prompt = Path(f"prompts/{versione}.md").read_text(encoding="utf-8")
+    file_prompt = Path(f"prompts/{versione}.md")
+    modello_prompt = file_prompt.read_text(encoding="utf-8")
+    controlla_segnaposto(modello_prompt, file_prompt.name, ["{REQUISITO}", "{PUNTI}"])
     return (modello_prompt
             .replace("{REQUISITO}", requisito.strip())
             .replace("{PUNTI}", testo_punti(punti)))
