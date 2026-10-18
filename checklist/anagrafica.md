@@ -64,3 +64,17 @@ Livelli ammessi: unit, api, e2e
 | A53 | Messaggi di validazione collegati al campo giusto e annunciati quando il focus arriva sull'errore | accessibilità | e2e |
 | A54 | Se il salvataggio fallisce, un nuovo tentativo dalla UI non crea record duplicati | negativo | e2e |
 | A55 | Errore di validazione dall'API: risposta strutturata, con il campo e il motivo identificabili dal client | negativo | api |
+
+
+## Esempio di scenario
+
+PUNTO: A18: CAP di 5 cifre e provincia con sigla di 2 lettere
+RIGA DEL REQUISITO: Il CAP deve avere 5 cifre e la provincia va indicata con la sigla di 2 lettere.
+TIPO: negativo
+LIVELLI AMMESSI: unit
+Risposta:
+{"livello": "unit",
+ "titolo": "CAP di 4 cifre non accettato",
+ "dato": ["che sto compilando il form Nuovo cliente"],
+ "quando": ["scrivo '5010' nel campo CAP"],
+ "allora": ["vedo un messaggio di errore sotto il campo CAP", "il bottone Salva resta disabilitato"]}

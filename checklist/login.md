@@ -41,3 +41,17 @@ Livelli ammessi: unit, api, e2e
 | L30 | Login con una sessione già attiva | limite | e2e |
 | L31 | Sessione dopo chiusura e riapertura del browser | limite | e2e |
 | L32 | Messaggi di errore accessibili da tastiera e screen reader | accessibilità | unit, e2e |
+
+
+## Esempio di scenario
+
+PUNTO: L3: Password errata: messaggio di errore, si resta sulla pagina di login
+RIGA DEL REQUISITO: Con username o password errati compare lo stesso messaggio di errore e l'utente resta sulla pagina di login.
+TIPO: negativo
+LIVELLI AMMESSI: e2e
+Risposta:
+{"livello": "e2e",
+ "titolo": "Login con password errata mostra un messaggio di errore",
+ "dato": ["che sono sulla pagina di login"],
+ "quando": ["eseguo il login con username 'mrossi' e password 'password-sbagliata'"],
+ "allora": ["vedo il messaggio di errore", "resto sulla pagina di login"]}

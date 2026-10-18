@@ -16,6 +16,9 @@ from generatore.gherkin import pulisci_passo
 from generatore.schemas import Scenario
 
 MAX_PAROLE = 10                      # nomi di metodo non infiniti
+# Parole che non possono chiudere un nome: "..._codice_fiscale_con" → "..._codice_fiscale"
+PAROLE_VUOTE = {"con", "di", "del", "della", "dei", "delle", "il", "lo", "la", "le", "gli", "un", "una",
+                "e", "o", "a", "al", "alla", "da", "dal", "in", "nel", "nella", "per", "su", "sul", "che"}
 # Valori tra virgolette: "..." / “...” / ‘...’ / '...'. L'apice singolo vale solo se NON è attaccato
 # a una lettera prima (così l'apostrofo di "l'email" non viene preso per una virgoletta)
 VIRGOLETTE = r"\"([^\"]+)\"|“([^”]+)”|‘([^’]+)’|(?<!\w)'([^']+)'(?!\w)"
@@ -45,7 +48,10 @@ def analizza_passo(sezione: str, testo: str) -> Passo:
     senza_valori = re.sub(VIRGOLETTE, " ", testo)
     pulito = re.sub(r"[^a-z0-9]+", " ", senza_accenti(senza_valori).lower())
     # via le parole di una lettera ("l'email" → "email"), ma non i numeri ("5 tentativi")
-    parole = [p for p in pulito.split() if len(p) > 1 or p.isdigit()][:MAX_PAROLE] or ["passo"]
+    parole = [p for p in pulito.split() if len(p) > 1 or p.isdigit()][:MAX_PAROLE]
+    while len(parole) > 1 and parole[-1] in PAROLE_VUOTE:
+        parole.pop()
+    parole = parole or ["passo"]
     if sezione == "Allora" and parole[0] == "verifica":
         parole = parole[1:] or ["passo"]          # niente "verifica_verifica_..."
     return Passo(sezione, testo, parole, valori)

@@ -15,7 +15,7 @@ from dataclasses import dataclass, field
 from typing import Callable
 
 from generatore import PROGETTO
-from generatore.checklist import leggi_checklist
+from generatore.checklist import leggi_checklist, leggi_esempio
 from generatore.controlli import controlla_segnaposto
 from generatore.decidi import corpo_requisito, decidi_con_riga, righe_requisito
 from generatore.gherkin import feature, scenario_gherkin
@@ -49,6 +49,7 @@ class Analisi:
     righe: list[str]
     decisioni: list[Decisione] = field(default_factory=list)
     scenari: list[Scenario] = field(default_factory=list)
+    avvisi: dict[str, list[str]] = field(default_factory=dict)   # codice → correzioni fatte dal ciclo
     secondi: float = 0.0
 
     @property
@@ -62,7 +63,8 @@ class Analisi:
 
     def schede(self) -> list[dict]:
         """Per ogni scenario: il Gherkin e lo scheletro nei tre framework (per i bottoni della pagina)."""
-        return [{"scenario": s, "gherkin": scenario_gherkin(s), "codice": per_scenario(s, self.checklist)}
+        return [{"scenario": s, "gherkin": scenario_gherkin(s), "codice": per_scenario(s, self.checklist),
+                 "avvisi": self.avvisi.get(s.codice, [])}
                 for s in self.scenari]
 
     def zip_scheletri(self) -> bytes:
@@ -121,7 +123,7 @@ def analizza(
     requisito: str,
     checklist: str,
     prompt_decidi: str = "v4",
-    prompt_scenario: str = "s1",
+    prompt_scenario: str = "s3",
     avanzamento: Callable[[str], None] | None = None,
 ) -> Analisi:
     """Passo A + passo B su un requisito. `avanzamento` (facoltativo) riceve messaggi tipo "L3 (5/32)"."""
@@ -131,6 +133,7 @@ def analizza(
     if not righe:
         raise ValueError("Il requisito è vuoto")
     punti = leggi_checklist(checklist)
+    esempio = leggi_esempio(checklist)
     testo_decidi = leggi_prompt(prompt_decidi, "decidi", ["{RIGHE}", "{PUNTO}"])
     testo_scenario = leggi_prompt(
         prompt_scenario, "scenario", ["{PUNTO}", "{RIGA}", "{LIVELLI}"]
@@ -164,9 +167,10 @@ def analizza(
     coperti = [(d, p) for d, p in zip(analisi.decisioni, punti) if d.coperto]
     for i, (decisione, punto) in enumerate(coperti, start=1):
         avvisa(f"Passo B: {punto.codice} ({i}/{len(coperti)})")
-        analisi.scenari.append(
-            scrivi_scenario(testo_scenario, punto, decisione.testo_riga)
-        )
+        scenario, avvisi = scrivi_scenario(testo_scenario, punto, decisione.testo_riga, esempio)
+        analisi.scenari.append(scenario)
+        if avvisi:
+            analisi.avvisi[punto.codice] = avvisi
 
     analisi.secondi = time.perf_counter() - inizio
     return analisi

@@ -68,6 +68,17 @@ def leggi_checklist(nome: str) -> list[PuntoChecklist]:
     return punti
 
 
+def leggi_esempio(nome: str) -> str:
+    """Lo scenario di esempio della checklist: la sezione "## Esempio di scenario" (vuoto se non c'è).
+
+    L'esempio sta nella checklist e non nel prompt: così ogni area ha il SUO esempio,
+    e un modello piccolo che copia il contenuto copia almeno parole dell'area giusta.
+    """
+    testo = (CARTELLA / f"{nome}.md").read_text(encoding="utf-8")
+    trovato = re.search(r"^##\s*Esempio di scenario\s*$(.*?)(?=^##\s|\Z)", testo, re.MULTILINE | re.DOTALL)
+    return trovato.group(1).strip() if trovato else ""
+
+
 # ---------- Prova veloce: python -m generatore.checklist login ----------
 
 if __name__ == "__main__":
@@ -81,3 +92,5 @@ if __name__ == "__main__":
         print(f"  {p.codice:<4} {p.tipo:<13} {', '.join(p.livelli):<10} {p.cosa}")
     print("  ...")
     print("Codici:", [p.codice for p in punti])
+    esempio = leggi_esempio(nome)
+    print("Esempio di scenario:", "✅ presente" if esempio else "❌ manca (sezione '## Esempio di scenario')")

@@ -62,6 +62,7 @@
       <b>{{ scheda.scenario.codice }}</b> {{ scheda.scenario.titolo }}
       <span class="etichetta">{{ scheda.scenario.tipo }}</span>
       <span class="etichetta">{{ scheda.scenario.livello }}</span>
+      {% if scheda.avvisi %}<span class="etichetta corretto" title="{{ scheda.avvisi|join:' — ' }}">🔁 corretto {{ scheda.avvisi|length }}×</span>{% endif %}
     </div>
     <div class="linguette">
       {% for nome in framework %}
