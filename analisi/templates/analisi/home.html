@@ -1,5 +1,24 @@
 {% extends "analisi/base.html" %}
 {% block contenuto %}
+{% if controllo is not None %}
+<div class="card" id="controllo">
+  <h2>Controllo del requisito</h2>
+  {% if da_migliorare or controllo_generali %}
+    <p class="sotto">{{ da_migliorare }} righe su {{ controllo|length }} si possono migliorare. Sono consigli: puoi anche analizzare il requisito così com'è.</p>
+  {% else %}
+    <p class="sotto">✅ Nessun avviso: il requisito è pronto per l'analisi.</p>
+  {% endif %}
+  {% for avviso in controllo_generali %}<p class="avviso">⚠️ {{ avviso }}</p>{% endfor %}
+  <ol class="righe controllo">
+    {% for riga in controllo %}
+      <li>{% if riga.avvisi %}⚠️{% else %}✅{% endif %} {{ riga.testo }}
+        {% if riga.avvisi %}<ul>{% for avviso in riga.avvisi %}<li>{{ avviso }}</li>{% endfor %}</ul>{% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+</div>
+{% endif %}
+
 <div class="card">
   <h1>Nuova analisi</h1>
   <p class="sotto">Scrivi il requisito, una regola per riga. Il modello controlla ogni punto della checklist:
@@ -11,6 +30,19 @@
 
     {{ form.titolo.label_tag }} {{ form.titolo }} {{ form.titolo.errors }}
     {{ form.requisito.label_tag }} {{ form.requisito }} {{ form.requisito.errors }}
+    <details class="guida">
+      <summary>Come scrivere un buon requisito per l'analisi</summary>
+      <ol>
+        <li><b>Una regola per riga.</b> Il generatore sceglie una riga per ogni punto della checklist: due regole nella stessa riga si confondono.</li>
+        <li><b>Di' cosa succede, anche quando va male.</b> Non solo "solo gli amministratori possono creare prodotti", ma anche "un utente che non è amministratore riceve un errore 403".</li>
+        <li><b>Scrivi i testi esatti tra virgolette.</b> Compare il messaggio "Importo insufficiente": il generatore lo userà invece di "vedo un messaggio di errore".</li>
+        <li><b>Metti i numeri nei limiti.</b> "Al massimo 80 caratteri", "fino al 20%", "20 ordini per pagina": servono per i valori limite.</li>
+        <li><b>Niente parole vaghe.</b> "Gestito correttamente" non si può verificare: scrivi cosa si vede o cosa risponde il sistema.</li>
+      </ol>
+      <p class="sotto" style="margin:8px 0 4px"><b>Prima:</b> L'immagine del prodotto deve essere JPG o PNG.<br>
+         <b>Dopo:</b> L'immagine del prodotto deve essere JPG o PNG: con un altro formato compare il messaggio "Formato non supportato".</p>
+      <p class="sotto" style="margin:0">Il bottone <b>Controlla il requisito</b> applica queste regole riga per riga, senza AI e senza attesa.</p>
+    </details>
 
     {{ form.checklist.label_tag }} {{ form.checklist }} {{ form.checklist.errors }}
     <p class="sotto" style="margin:6px 0 0">Tra quelle spuntate, la prima della lista dà il nome agli scheletri (es. ordini → OrdiniPage).
@@ -24,14 +56,17 @@
       </div>
     </details>
 
-    <button type="submit" id="avvia">Analizza</button>
+    <button type="submit" name="azione" value="analizza" id="avvia">Analizza</button>
+    <button type="submit" name="azione" value="controlla" class="bottone secondario" formnovalidate>Controlla il requisito</button>
     <p class="attesa" id="attesa">⏳ Analisi in corso… di solito 30–60 secondi. Non chiudere la pagina.</p>
   </form>
 </div>
 
 <script>
   // Mentre il modello lavora: bottone disattivato e messaggio di attesa
-  document.getElementById("form-analisi").addEventListener("submit", function () {
+  // (solo per "Analizza": il controllo del requisito è immediato)
+  document.getElementById("form-analisi").addEventListener("submit", function (evento) {
+    if (evento.submitter && evento.submitter.value === "controlla") return;
     document.getElementById("avvia").disabled = true;
     document.getElementById("attesa").style.display = "block";
   });

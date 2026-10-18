@@ -75,7 +75,10 @@ class Analisi:
     def schede(self) -> list[dict]:
         """Per ogni scenario: il Gherkin e lo scheletro nei tre framework (per i bottoni della pagina)."""
         return [{"scenario": s, "gherkin": scenario_gherkin(s), "codice": per_scenario(s, self.area),
-                 "avvisi": self.avvisi.get(s.codice, []), "simile_a": self.simili.get(s.codice)}
+                 "avvisi": self.avvisi.get(s.codice, []), "simile_a": self.simili.get(s.codice),
+                 # quanti tentativi sono stati corretti, e se alla fine lo scenario è a posto o va controllato
+                 "correzioni": sum(a.startswith("Tentativo") for a in self.avvisi.get(s.codice, [])),
+                 "non_risolto": any(a.startswith("Problemi non risolti") for a in self.avvisi.get(s.codice, []))}
                 for s in self.scenari]
 
     def zip_scheletri(self) -> bytes:
