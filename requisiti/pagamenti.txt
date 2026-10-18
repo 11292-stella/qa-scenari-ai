@@ -1,0 +1,10 @@
+Titolo: Pagamento del conto alla cassa
+Checklist: pagamenti, pagamenti_contanti, pagamenti_carta
+
+Dalla cassa il cameriere apre l'ordine del tavolo e preme Paga; l'API di pagamento restituisce l'identificativo del pagamento.
+L'importo del pagamento deve essere uguale al totale dell'ordine.
+Un ordine già pagato non può essere pagato una seconda volta.
+In contanti la cassa calcola il resto; se il contante ricevuto è inferiore al totale compare il messaggio "Importo insufficiente".
+Con la carta il simulatore può approvare o rifiutare; se rifiuta compare il messaggio "Pagamento non riuscito" e l'ordine resta da pagare.
+Se il simulatore non risponde entro 30 secondi il pagamento resta "In verifica" e non viene ripetuto in automatico.
+Quando il pagamento è approvato l'ordine passa allo stato "Pagato".

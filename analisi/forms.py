@@ -6,7 +6,7 @@ compare da sola nel menu.
 """
 from django import forms
 
-from generatore.servizio import checklist_disponibili, prompt_disponibili
+from generatore.servizio import PROMPT_DECIDI, PROMPT_SCENARIO, checklist_disponibili, prompt_disponibili
 
 
 def scelte(valori: list[str]) -> list[tuple[str, str]]:
@@ -24,20 +24,27 @@ class AnalisiForm(forms.Form):
             "Il cliente accede con email e password.\n"
             "Con credenziali valide torna alla pagina da cui era partito.\n..."}),
     )
-    checklist = forms.ChoiceField(label="Checklist")
+    checklist = forms.MultipleChoiceField(
+        label="Checklist (una o più)",
+        widget=forms.CheckboxSelectMultiple,
+        error_messages={"required": "Scegli almeno una checklist adatta al requisito."},
+    )
     prompt_decidi = forms.ChoiceField(label="Prompt passo A (quale riga?)")
     prompt_scenario = forms.ChoiceField(label="Prompt passo B (scenario)")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Nessuna checklist preselezionata: una checklist sbagliata dà un'analisi sbagliata SENZA errori,
+        # quindi la scelta deve farla la tester (se resta vuota, il form non è valido)
+        # nessuna preselezionata: la sceglie la tester; la PRIMA scelta dà il nome agli scheletri
         self.fields["checklist"].choices = scelte(checklist_disponibili())
         decidi = prompt_disponibili("decidi")
         scenario = prompt_disponibili("scenario")
         self.fields["prompt_decidi"].choices = scelte(decidi)
         self.fields["prompt_scenario"].choices = scelte(scenario)
-        # di default l'ultima versione (la più recente)
-        self.fields["prompt_decidi"].initial = decidi[-1] if decidi else None
-        self.fields["prompt_scenario"].initial = scenario[-1] if scenario else None
+        # di default la versione MIGLIORE (misurata), non l'ultima: l'ultima può essere un esperimento fallito
+        self.fields["prompt_decidi"].initial = PROMPT_DECIDI
+        self.fields["prompt_scenario"].initial = PROMPT_SCENARIO
 
     def clean_requisito(self):
         righe = [r for r in self.cleaned_data["requisito"].splitlines() if r.strip()]

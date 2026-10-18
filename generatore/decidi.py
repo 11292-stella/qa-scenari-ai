@@ -11,6 +11,7 @@ Uso:
     python -m generatore.decidi requisiti/login.txt --prompt v3
     python -m generatore.decidi requisiti/login.txt --prompt v4 --ripetizioni 5
 """
+
 import argparse
 import json
 import re
@@ -20,9 +21,9 @@ from pathlib import Path
 import ollama
 
 from generatore import PROGETTO
-from generatore.checklist import PuntoChecklist, leggi_checklist
+from generatore.checklist import PuntoChecklist, leggi_checklist, leggi_checklist_multiple
 from generatore.controlli import citazione_valida, controlla_segnaposto
-from generatore.genera import nome_checklist
+from generatore.genera import nomi_checklist
 from generatore.schemas import Decisione, schema_riga
 
 MODELLO = "qwen2.5:3b"
@@ -31,7 +32,11 @@ OPZIONI = {"temperature": 0, "num_ctx": 4096, "num_predict": 300}
 
 def corpo_requisito(requisito: str) -> str:
     """Il requisito senza le righe 'Titolo:' e 'Checklist:', che non vanno citate."""
-    righe = [r for r in requisito.splitlines() if not re.match(r"^(Titolo|Checklist):", r, re.IGNORECASE)]
+    righe = [
+        r
+        for r in requisito.splitlines()
+        if not re.match(r"^(Titolo|Checklist):", r, re.IGNORECASE)
+    ]
     return "\n".join(righe).strip()
 
 
@@ -68,35 +73,53 @@ def chiedi(prompt: str, schema) -> str:
     return risposta.message.content
 
 
-def decidi_con_citazione(modello_prompt: str, corpo: str, punto: PuntoChecklist) -> dict:
-    prompt = modello_prompt.replace("{REQUISITO}", corpo).replace("{PUNTO}", f"{punto.codice}: {punto.cosa}")
+def decidi_con_citazione(
+    modello_prompt: str, corpo: str, punto: PuntoChecklist
+) -> dict:
+    prompt = modello_prompt.replace("{REQUISITO}", corpo).replace(
+        "{PUNTO}", f"{punto.codice}: {punto.cosa}"
+    )
     decisione = Decisione.model_validate_json(chiedi(prompt, Decisione))
     vera = citazione_valida(decisione.citazione, corpo)
 
     if decisione.ne_parla and vera:
         finale = "scenario"
     elif decisione.ne_parla:
-        finale = "INVENTA"      # dice sì ma la frase non esiste nel requisito
+        finale = "INVENTA"  # dice sì ma la frase non esiste nel requisito
     else:
         finale = "domanda"
 
     prova = "vera" if vera else ("falsa" if decisione.citazione else "-")
-    return {"finale": finale, "ai": "sì" if decisione.ne_parla else "no", "prova": prova,
-            "citazione": decisione.citazione}
+    return {
+        "finale": finale,
+        "ai": "sì" if decisione.ne_parla else "no",
+        "prova": prova,
+        "citazione": decisione.citazione,
+    }
 
 
-def decidi_con_riga(modello_prompt: str, righe: list[str], punto: PuntoChecklist) -> dict:
+def decidi_con_riga(
+    modello_prompt: str, righe: list[str], punto: PuntoChecklist
+) -> dict:
     numerate = "\n".join(f"{n}. {riga}" for n, riga in enumerate(righe, start=1))
-    prompt = modello_prompt.replace("{RIGHE}", numerate).replace("{PUNTO}", f"{punto.codice}: {punto.cosa}")
+    prompt = modello_prompt.replace("{RIGHE}", numerate).replace(
+        "{PUNTO}", f"{punto.codice}: {punto.cosa}"
+    )
     Schema = schema_riga(len(righe))
     numero = Schema.model_validate_json(chiedi(prompt, Schema)).riga
 
-    return {"finale": "scenario" if numero else "domanda", "ai": "sì" if numero else "no",
-            "prova": f"riga {numero}" if numero else "-",
-            "riga": numero, "testo_riga": righe[numero - 1] if numero else ""}
+    return {
+        "finale": "scenario" if numero else "domanda",
+        "ai": "sì" if numero else "no",
+        "prova": f"riga {numero}" if numero else "-",
+        "riga": numero,
+        "testo_riga": righe[numero - 1] if numero else "",
+    }
 
 
-def valuta_esito(esito: dict, punto: PuntoChecklist, attesi: dict | None, modo: str) -> dict:
+def valuta_esito(
+    esito: dict, punto: PuntoChecklist, attesi: dict | None, modo: str
+) -> dict:
     """Confronta un esito con il MIO riferimento: ✅, ⚠️ riga sbagliata, ❌ (o "" se non c'è riferimento)."""
     if attesi is None:
         return {"atteso": "-", "riga_attesa": None, "giusto": ""}
@@ -105,14 +128,21 @@ def valuta_esito(esito: dict, punto: PuntoChecklist, attesi: dict | None, modo: 
     # INVENTA è sempre un errore: l'AI ha detto "sì" senza una prova vera
     if esito["finale"] != atteso:
         giusto = "❌"
-    elif atteso == "scenario" and modo == "riga" and riga_attesa and esito["riga"] != riga_attesa:
-        giusto = "⚠️ riga sbagliata"   # decisione giusta, ma per il motivo sbagliato
+    elif (
+        atteso == "scenario"
+        and modo == "riga"
+        and riga_attesa
+        and esito["riga"] != riga_attesa
+    ):
+        giusto = "⚠️ riga sbagliata"  # decisione giusta, ma per il motivo sbagliato
     else:
         giusto = "✅"
     return {"atteso": atteso, "riga_attesa": riga_attesa, "giusto": giusto}
 
 
-def esegui(punti, modo, modello_prompt, corpo, righe, attesi, stampa: bool) -> list[dict]:
+def esegui(
+    punti, modo, modello_prompt, corpo, righe, attesi, stampa: bool
+) -> list[dict]:
     """Un giro completo su tutti i punti della checklist."""
     risultati = []
     for punto in punti:
@@ -120,12 +150,20 @@ def esegui(punti, modo, modello_prompt, corpo, righe, attesi, stampa: bool) -> l
             esito = decidi_con_riga(modello_prompt, righe, punto)
         else:
             esito = decidi_con_citazione(modello_prompt, corpo, punto)
-        esito = {"codice": punto.codice, **valuta_esito(esito, punto, attesi, modo), **esito}
+        esito = {
+            "codice": punto.codice,
+            **valuta_esito(esito, punto, attesi, modo),
+            **esito,
+        }
 
         if stampa:
-            colonna_atteso = esito["atteso"] + (f" riga {esito['riga_attesa']}" if esito["riga_attesa"] else "")
-            print(f"{punto.codice:<6}{esito['ai']:<8}{esito['prova']:<11}{esito['finale']:<10}"
-                  f"{colonna_atteso:<18} {esito['giusto']}")
+            colonna_atteso = esito["atteso"] + (
+                f" riga {esito['riga_attesa']}" if esito["riga_attesa"] else ""
+            )
+            print(
+                f"{punto.codice:<6}{esito['ai']:<8}{esito['prova']:<11}{esito['finale']:<10}"
+                f"{colonna_atteso:<18} {esito['giusto']}"
+            )
         risultati.append(esito)
     return risultati
 
@@ -155,30 +193,45 @@ def risposta_breve(esito: dict) -> str:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Passo A: il requisito parla di ogni punto?")
+    parser = argparse.ArgumentParser(
+        description="Passo A: il requisito parla di ogni punto?"
+    )
     parser.add_argument("requisito", help="es. requisiti/login.txt")
-    parser.add_argument("--prompt", default="v3", help="versione del prompt (usa prompts/<versione>_decidi.md)")
-    parser.add_argument("--ripetizioni", type=int, default=1,
-                        help="quante volte ripetere tutto (ricaricando il modello ogni volta): "
-                             "con più di 1 mostra media e punti instabili")
+    parser.add_argument(
+        "--prompt",
+        default="v3",
+        help="versione del prompt (usa prompts/<versione>_decidi.md)",
+    )
+    parser.add_argument(
+        "--ripetizioni",
+        type=int,
+        default=1,
+        help="quante volte ripetere tutto (ricaricando il modello ogni volta): "
+        "con più di 1 mostra media e punti instabili",
+    )
     args = parser.parse_args()
 
     percorso = Path(args.requisito)
     testo = percorso.read_text(encoding="utf-8")
     corpo = corpo_requisito(testo)
     righe = righe_requisito(corpo)
-    punti = leggi_checklist(nome_checklist(testo))
+    punti = leggi_checklist_multiple(nomi_checklist(testo))
     attesi = leggi_riferimento(percorso.stem)
 
     file_prompt = PROGETTO / "prompts" / f"{args.prompt}_decidi.md"
     modello_prompt = file_prompt.read_text(encoding="utf-8")
     modo = "riga" if "{RIGHE}" in modello_prompt else "citazione"
-    controlla_segnaposto(modello_prompt, file_prompt.name,
-                         ["{RIGHE}" if modo == "riga" else "{REQUISITO}", "{PUNTO}"])
+    controlla_segnaposto(
+        modello_prompt,
+        file_prompt.name,
+        ["{RIGHE}" if modo == "riga" else "{REQUISITO}", "{PUNTO}"],
+    )
 
     n = args.ripetizioni
-    print(f"Requisito: {percorso.name} | {len(punti)} punti | prompt: {file_prompt.stem} "
-          f"| modo: {modo} | ripetizioni: {n}\n")
+    print(
+        f"Requisito: {percorso.name} | {len(punti)} punti | prompt: {file_prompt.stem} "
+        f"| modo: {modo} | ripetizioni: {n}\n"
+    )
     if n == 1:
         print(f"{'punto':<6}{'AI':<8}{'prova':<11}{'finale':<10}{'atteso':<18}")
 
@@ -189,11 +242,15 @@ def main() -> None:
             if giro > 1:
                 scarica_modello()
             print(f"Giro {giro}/{n}...", end=" ", flush=True)
-        risultati = esegui(punti, modo, modello_prompt, corpo, righe, attesi, stampa=(n == 1))
+        risultati = esegui(
+            punti, modo, modello_prompt, corpo, righe, attesi, stampa=(n == 1)
+        )
         giri.append(risultati)
         if n > 1 and attesi is not None:
             decisioni, complete = conta(risultati)
-            print(f"decisioni {decisioni}/{len(punti)}, con la riga giusta {complete}/{len(punti)}")
+            print(
+                f"decisioni {decisioni}/{len(punti)}, con la riga giusta {complete}/{len(punti)}"
+            )
     durata = time.perf_counter() - inizio
 
     # Con più giri: tabella dei punti, con quante volte sono giusti e le risposte diverse
@@ -205,12 +262,16 @@ def main() -> None:
             risposte = [risposta_breve(e) for e in esiti]
             diverse = {r: risposte.count(r) for r in dict.fromkeys(risposte)}
             giusti = sum(e["giusto"] == "✅" for e in esiti)
-            atteso = esiti[0]["atteso"] + (f" riga {esiti[0]['riga_attesa']}" if esiti[0]["riga_attesa"] else "")
+            atteso = esiti[0]["atteso"] + (
+                f" riga {esiti[0]['riga_attesa']}" if esiti[0]["riga_attesa"] else ""
+            )
             segno = "  ← instabile" if len(diverse) > 1 else ""
             if len(diverse) > 1:
                 instabili.append(punto.codice)
-            print(f"{punto.codice:<6}{atteso:<18}{giusti}/{n:<7}"
-                  f"{', '.join(f'{r} ×{c}' for r, c in diverse.items())}{segno}")
+            print(
+                f"{punto.codice:<6}{atteso:<18}{giusti}/{n:<7}"
+                f"{', '.join(f'{r} ×{c}' for r, c in diverse.items())}{segno}"
+            )
 
     # Riepilogo
     print(f"\nTempo: {durata:.1f} s ({durata / (len(punti) * n):.1f} s a punto)")
@@ -219,23 +280,36 @@ def main() -> None:
             print(f"{nome:<9}: {sum(r['finale'] == nome for r in giri[0])}")
     if attesi is not None:
         conteggi = [conta(g) for g in giri]
-        for indice, nome in ((0, "Decisioni giuste (sì/no)"), (1, "Giuste anche nella riga (vere)")):
+        for indice, nome in (
+            (0, "Decisioni giuste (sì/no)"),
+            (1, "Giuste anche nella riga (vere)"),
+        ):
             if indice == 1 and modo != "riga":
                 continue
             valori = [c[indice] for c in conteggi]
             if n == 1:
                 print(f"{nome + ':':<33}{valori[0]}/{len(punti)}")
             else:
-                print(f"{nome + ':':<33}media {sum(valori) / n:.1f}/{len(punti)}  (min {min(valori)}, max {max(valori)})")
+                print(
+                    f"{nome + ':':<33}media {sum(valori) / n:.1f}/{len(punti)}  (min {min(valori)}, max {max(valori)})"
+                )
     if n > 1:
         print(f"Punti instabili: {len(instabili)}  →  {', '.join(instabili) or '-'}")
 
     uscita = PROGETTO / "risultati" / args.prompt
     uscita.mkdir(parents=True, exist_ok=True)
-    nome_file = f"{percorso.stem}_decisioni.json" if n == 1 else f"{percorso.stem}_decisioni_x{n}.json"
+    nome_file = (
+        f"{percorso.stem}_decisioni.json"
+        if n == 1
+        else f"{percorso.stem}_decisioni_x{n}.json"
+    )
     file_json = uscita / nome_file
-    dati = giri[0] if n == 1 else {"ripetizioni": n, "instabili": instabili, "giri": giri}
-    file_json.write_text(json.dumps(dati, ensure_ascii=False, indent=2), encoding="utf-8")
+    dati = (
+        giri[0] if n == 1 else {"ripetizioni": n, "instabili": instabili, "giri": giri}
+    )
+    file_json.write_text(
+        json.dumps(dati, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     print(f"\nSalvato in {file_json}")
 
 

@@ -12,11 +12,17 @@
     {{ form.titolo.label_tag }} {{ form.titolo }} {{ form.titolo.errors }}
     {{ form.requisito.label_tag }} {{ form.requisito }} {{ form.requisito.errors }}
 
-    <div class="tre">
-      <div>{{ form.checklist.label_tag }} {{ form.checklist }}</div>
-      <div>{{ form.prompt_decidi.label_tag }} {{ form.prompt_decidi }}</div>
-      <div>{{ form.prompt_scenario.label_tag }} {{ form.prompt_scenario }}</div>
-    </div>
+    {{ form.checklist.label_tag }} {{ form.checklist }} {{ form.checklist.errors }}
+    <p class="sotto" style="margin:6px 0 0">Tra quelle spuntate, la prima della lista dà il nome agli scheletri (es. ordini → OrdiniPage).
+       Meno checklist = analisi più veloce e meno scenari fuori luogo.</p>
+
+    <details style="margin-top:14px"{% if form.prompt_decidi.errors or form.prompt_scenario.errors %} open{% endif %}>
+      <summary class="sotto" style="cursor:pointer">Opzioni avanzate: versioni dei prompt (per confrontare gli esperimenti)</summary>
+      <div class="tre" style="grid-template-columns:repeat(2, 1fr)">
+        <div>{{ form.prompt_decidi.label_tag }} {{ form.prompt_decidi }} {{ form.prompt_decidi.errors }}</div>
+        <div>{{ form.prompt_scenario.label_tag }} {{ form.prompt_scenario }} {{ form.prompt_scenario.errors }}</div>
+      </div>
+    </details>
 
     <button type="submit" id="avvia">Analizza</button>
     <p class="attesa" id="attesa">⏳ Analisi in corso… di solito 30–60 secondi. Non chiudere la pagina.</p>

@@ -28,6 +28,7 @@ class PuntoChecklist:
     cosa: str
     tipo: str
     livelli: tuple[str, ...]
+    area: str = ""          # la checklist da cui viene il punto (es. "ordini_importi")
 
 
 def leggi_checklist(nome: str) -> list[PuntoChecklist]:
@@ -59,7 +60,7 @@ def leggi_checklist(nome: str) -> list[PuntoChecklist]:
         if any(p.codice == codice for p in punti):
             errori.append(f"riga {numero}: codice '{codice}' ripetuto")
 
-        punti.append(PuntoChecklist(codice, cosa, tipo, livelli))
+        punti.append(PuntoChecklist(codice, cosa, tipo, livelli, area=nome))
 
     if not punti:
         errori.append("nessun punto trovato: la tabella è scritta bene?")
@@ -68,15 +69,42 @@ def leggi_checklist(nome: str) -> list[PuntoChecklist]:
     return punti
 
 
-def leggi_esempio(nome: str) -> str:
+def leggi_checklist_multiple(nomi: list[str]) -> list[PuntoChecklist]:
+    """Più checklist insieme (es. ["ordini", "ordini_importi"]). Un codice ripetuto tra due file è un errore."""
+    punti: list[PuntoChecklist] = []
+    for nome in nomi:
+        for punto in leggi_checklist(nome):
+            gia = next((p for p in punti if p.codice == punto.codice), None)
+            if gia:
+                raise ValueError(f"Il codice {punto.codice} è sia in '{gia.area}' sia in '{nome}': i codici devono essere unici")
+            punti.append(punto)
+    return punti
+
+
+def leggi_esempio(nome: str, livello: str = "") -> str:
     """Lo scenario di esempio della checklist: la sezione "## Esempio di scenario" (vuoto se non c'è).
+    Con un livello ("api") cerca prima "## Esempio di scenario api"; se non c'è, usa quello normale.
 
     L'esempio sta nella checklist e non nel prompt: così ogni area ha il SUO esempio,
     e un modello piccolo che copia il contenuto copia almeno parole dell'area giusta.
     """
     testo = (CARTELLA / f"{nome}.md").read_text(encoding="utf-8")
-    trovato = re.search(r"^##\s*Esempio di scenario\s*$(.*?)(?=^##\s|\Z)", testo, re.MULTILINE | re.DOTALL)
-    return trovato.group(1).strip() if trovato else ""
+    for titolo in ([f"Esempio di scenario {livello}"] if livello else []) + ["Esempio di scenario"]:
+        trovato = re.search(rf"^##\s*{titolo}\s*$(.*?)(?=^##\s|\Z)", testo, re.MULTILINE | re.DOTALL)
+        if trovato:
+            return trovato.group(1).strip()
+    return ""
+
+
+def esempio_per(punto: PuntoChecklist) -> str:
+    """L'esempio giusto per un punto: della SUA checklist e del SUO livello, se la checklist ce l'ha
+    ("## Esempio di scenario api", "## Esempio di scenario e2e"...), altrimenti quello normale.
+    Un modello piccolo scrive come l'esempio: con un esempio di form scrive anche gli scenari API come un form,
+    e con un esempio API scrive anche gli e2e come richieste."""
+    if not punto.area:
+        return ""
+    livello = punto.livelli[0] if len(set(punto.livelli)) == 1 else ""
+    return leggi_esempio(punto.area, livello)
 
 
 # ---------- Prova veloce: python -m generatore.checklist login ----------

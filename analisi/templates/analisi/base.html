@@ -19,6 +19,10 @@
     label { display:block; font-weight:600; margin:14px 0 6px; font-size:14px; }
     input, textarea, select { width:100%; padding:9px 10px; border:1px solid var(--bordo); border-radius:7px; font:inherit; background:#fff; }
     textarea { font-family: ui-monospace, Consolas, monospace; font-size:14px; }
+    #id_checklist { display:grid; grid-template-columns:repeat(auto-fill, minmax(170px, 1fr)); gap:4px 12px;
+                    border:1px solid var(--bordo); border-radius:7px; padding:8px 10px; background:#fff; }
+    #id_checklist label { display:flex; align-items:center; gap:6px; font-weight:400; margin:0; }
+    #id_checklist input { width:auto; }
     .tre { display:grid; grid-template-columns:repeat(3, 1fr); gap:12px; }
     @media (max-width:700px) { .tre { grid-template-columns:1fr; } }
     button, .bottone { margin-top:18px; background:var(--accento); color:#fff; border:0; border-radius:7px;

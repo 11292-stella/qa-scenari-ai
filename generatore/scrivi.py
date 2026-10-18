@@ -20,9 +20,9 @@ import ollama
 from pydantic import ValidationError
 
 from generatore import PROGETTO
-from generatore.checklist import PuntoChecklist, leggi_checklist, leggi_esempio
+from generatore.checklist import PuntoChecklist, leggi_checklist_multiple, esempio_per
 from generatore.controlli import controlla_scenario, controlla_segnaposto
-from generatore.genera import nome_checklist
+from generatore.genera import nomi_checklist
 from generatore.gherkin import feature, pulisci_passo, scenario_gherkin
 from generatore.schemas import Scenario, schema_scenario
 
@@ -73,7 +73,8 @@ def scrivi_scenario(modello_prompt: str, punto: PuntoChecklist, testo_riga: str,
         # si controlla il passo GIÀ pulito: gli errori che Python corregge da solo ("@utente", "Dato" ripetuto)
         # non devono far sprecare tentativi all'AI
         problemi = controlla_scenario(*([pulisci_passo(p) for p in passi]
-                                        for passi in (scritto.dato, scritto.quando, scritto.allora)))
+                                        for passi in (scritto.dato, scritto.quando, scritto.allora)),
+                                      riga=testo_riga, tipo=punto.tipo, livello=scritto.livello)
         if not problemi:
             break
         avvisi.append(f"Tentativo {tentativo}: " + " | ".join(problemi))
@@ -125,8 +126,8 @@ def main() -> None:
     testo = percorso.read_text(encoding="utf-8")
     titolo = re.search(r"^Titolo:\s*(.+)$", testo, re.MULTILINE)
     titolo = titolo.group(1).strip() if titolo else percorso.stem
-    punti = {p.codice: p for p in leggi_checklist(nome_checklist(testo))}
-    esempio = leggi_esempio(nome_checklist(testo))
+    nomi = nomi_checklist(testo)
+    punti = {p.codice: p for p in leggi_checklist_multiple(nomi)}
 
     file_decisioni = (
         PROGETTO / "risultati" / args.decisioni / f"{percorso.stem}_decisioni.json"
@@ -155,7 +156,7 @@ def main() -> None:
     inizio = time.perf_counter()
     for decisione in da_scrivere:
         punto = punti[decisione["codice"]]
-        scenario, avvisi = scrivi_scenario(modello_prompt, punto, decisione["testo_riga"], esempio)
+        scenario, avvisi = scrivi_scenario(modello_prompt, punto, decisione["testo_riga"], esempio_per(punto))
         for avviso in avvisi:
             print(f"🔁 {punto.codice} {avviso}")
         if scenario is None:

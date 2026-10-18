@@ -55,3 +55,17 @@ Risposta:
  "dato": ["che sono sulla pagina di login"],
  "quando": ["eseguo il login con username 'mrossi' e password 'password-sbagliata'"],
  "allora": ["vedo il messaggio di errore", "resto sulla pagina di login"]}
+
+
+## Esempio di scenario api
+
+PUNTO: L22: Token non valido, manipolato o malformato: accesso negato
+RIGA DEL REQUISITO: Le API del gestionale accettano solo richieste con un token valido.
+TIPO: sicurezza
+LIVELLI AMMESSI: api
+Risposta:
+{"livello": "api",
+ "titolo": "Token manipolato rifiutato",
+ "dato": ["che ho un token di accesso modificato a mano"],
+ "quando": ["invio la richiesta della lista degli ordini con quel token"],
+ "allora": ["la richiesta viene rifiutata con codice '401'", "la risposta non contiene dati degli ordini"]}

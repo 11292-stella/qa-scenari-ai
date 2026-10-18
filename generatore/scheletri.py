@@ -21,7 +21,7 @@ PAROLE_VUOTE = {"con", "di", "del", "della", "dei", "delle", "il", "lo", "la", "
                 "e", "o", "a", "al", "alla", "da", "dal", "in", "nel", "nella", "per", "su", "sul", "che"}
 # Valori tra virgolette: "..." / “...” / ‘...’ / '...'. L'apice singolo vale solo se NON è attaccato
 # a una lettera prima (così l'apostrofo di "l'email" non viene preso per una virgoletta)
-VIRGOLETTE = r"\"([^\"]+)\"|“([^”]+)”|‘([^’]+)’|(?<!\w)'([^']+)'(?!\w)"
+VIRGOLETTE = r"\"([^\"]+)\"|“([^”]+)”|‘([^’]+)’|(?<!\w)'((?:[^']|'(?=\w))+)'(?!\w)"
 
 
 # ---------- Un passo, pronto per diventare codice ----------

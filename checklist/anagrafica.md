@@ -77,4 +77,18 @@ Risposta:
  "titolo": "CAP di 4 cifre non accettato",
  "dato": ["che sto compilando il form Nuovo cliente"],
  "quando": ["scrivo '5010' nel campo CAP"],
- "allora": ["vedo un messaggio di errore sotto il campo CAP", "il bottone Salva resta disabilitato"]}
+ "allora": ["vedo un messaggio di errore sotto il campo CAP"]}
+
+
+## Esempio di scenario api
+
+PUNTO: A3: Con l'API di creazione l'anagrafica viene salvata e restituita con il suo id
+RIGA DEL REQUISITO: Il cliente creato riceve un codice identificativo.
+TIPO: positivo
+LIVELLI AMMESSI: api
+Risposta:
+{"livello": "api",
+ "titolo": "Creazione via API con id restituito",
+ "dato": ["che non esiste un cliente con codice fiscale 'RSSMRA80A01H501U'"],
+ "quando": ["invio la richiesta di creazione del cliente 'Mario Rossi' con codice fiscale 'RSSMRA80A01H501U'"],
+ "allora": ["la richiesta viene accettata", "la risposta contiene l'id del nuovo cliente"]}

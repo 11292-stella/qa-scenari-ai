@@ -15,8 +15,8 @@ from dataclasses import dataclass, field
 from typing import Callable
 
 from generatore import PROGETTO
-from generatore.checklist import leggi_checklist, leggi_esempio
-from generatore.controlli import controlla_segnaposto
+from generatore.checklist import leggi_checklist_multiple, esempio_per
+from generatore.controlli import controlla_segnaposto, trova_simili
 from generatore.decidi import corpo_requisito, decidi_con_riga, righe_requisito
 from generatore.gherkin import feature, scenario_gherkin
 from generatore.scheletri import file_completi, per_scenario
@@ -24,6 +24,11 @@ from generatore.schemas import Scenario
 from generatore.scrivi import scrivi_scenario
 
 CARTELLA_PROMPT = PROGETTO / "prompts"
+
+# Le versioni MIGLIORI, scelte misurando (vedi il diario in PROGRESS.md). Le altre restano in prompts/
+# come storia degli esperimenti: si possono ancora scegliere dal form, sotto "Opzioni avanzate".
+PROMPT_DECIDI = "v4"      # v5 provata il 18/10: dice "sì" a quasi tutto (10/32 contro 26/32)
+PROMPT_SCENARIO = "s3"
 
 
 @dataclass
@@ -43,14 +48,16 @@ class Decisione:
 @dataclass
 class Analisi:
     titolo: str
-    checklist: str
+    checklist: str          # per mostrarla: "ordini + ordini_importi"
+    area: str               # la prima checklist: dà il nome agli scheletri (OrdiniPage, ordini_page.resource)
     prompt_decidi: str
     prompt_scenario: str
     righe: list[str]
     decisioni: list[Decisione] = field(default_factory=list)
     scenari: list[Scenario] = field(default_factory=list)
     avvisi: dict[str, list[str]] = field(default_factory=dict)
-    non_scritti: list[str] = field(default_factory=list)   # coperti, ma il modello non ha dato uno scenario valido   # codice → correzioni fatte dal ciclo
+    non_scritti: list[str] = field(default_factory=list)
+    simili: dict[str, str] = field(default_factory=dict)   # codice → codice dello scenario quasi uguale
     secondi: float = 0.0
 
     @property
@@ -67,8 +74,8 @@ class Analisi:
 
     def schede(self) -> list[dict]:
         """Per ogni scenario: il Gherkin e lo scheletro nei tre framework (per i bottoni della pagina)."""
-        return [{"scenario": s, "gherkin": scenario_gherkin(s), "codice": per_scenario(s, self.checklist),
-                 "avvisi": self.avvisi.get(s.codice, [])}
+        return [{"scenario": s, "gherkin": scenario_gherkin(s), "codice": per_scenario(s, self.area),
+                 "avvisi": self.avvisi.get(s.codice, []), "simile_a": self.simili.get(s.codice)}
                 for s in self.scenari]
 
     def zip_scheletri(self) -> bytes:
@@ -77,7 +84,7 @@ class Analisi:
         with zipfile.ZipFile(memoria, "w", zipfile.ZIP_DEFLATED) as z:
             z.writestr("scenari.feature", self.feature)
             z.writestr("LEGGIMI.txt", LEGGIMI)
-            for nome, testo in file_completi(self.titolo, self.scenari, self.checklist).items():
+            for nome, testo in file_completi(self.titolo, self.scenari, self.area).items():
                 z.writestr(nome, testo)
         return memoria.getvalue()
 
@@ -125,9 +132,9 @@ def leggi_prompt(versione: str, tipo: str, segnaposto: list[str]) -> str:
 def analizza(
     titolo: str,
     requisito: str,
-    checklist: str,
-    prompt_decidi: str = "v4",
-    prompt_scenario: str = "s3",
+    checklist: str | list[str],
+    prompt_decidi: str = PROMPT_DECIDI,
+    prompt_scenario: str = PROMPT_SCENARIO,
     avanzamento: Callable[[str], None] | None = None,
 ) -> Analisi:
     """Passo A + passo B su un requisito. `avanzamento` (facoltativo) riceve messaggi tipo "L3 (5/32)"."""
@@ -136,8 +143,10 @@ def analizza(
     righe = righe_requisito(corpo_requisito(requisito))
     if not righe:
         raise ValueError("Il requisito è vuoto")
-    punti = leggi_checklist(checklist)
-    esempio = leggi_esempio(checklist)
+    nomi = [checklist] if isinstance(checklist, str) else list(checklist)
+    if not nomi:
+        raise ValueError("Scegli almeno una checklist")
+    punti = leggi_checklist_multiple(nomi)
     testo_decidi = leggi_prompt(prompt_decidi, "decidi", ["{RIGHE}", "{PUNTO}"])
     testo_scenario = leggi_prompt(
         prompt_scenario, "scenario", ["{PUNTO}", "{RIGA}", "{LIVELLI}"]
@@ -145,7 +154,8 @@ def analizza(
 
     analisi = Analisi(
         titolo=titolo.strip() or "Senza titolo",
-        checklist=checklist,
+        checklist=" + ".join(nomi),
+        area=nomi[0],
         prompt_decidi=prompt_decidi,
         prompt_scenario=prompt_scenario,
         righe=righe,
@@ -171,7 +181,7 @@ def analizza(
     coperti = [(d, p) for d, p in zip(analisi.decisioni, punti) if d.coperto]
     for i, (decisione, punto) in enumerate(coperti, start=1):
         avvisa(f"Passo B: {punto.codice} ({i}/{len(coperti)})")
-        scenario, avvisi = scrivi_scenario(testo_scenario, punto, decisione.testo_riga, esempio)
+        scenario, avvisi = scrivi_scenario(testo_scenario, punto, decisione.testo_riga, esempio_per(punto))
         if avvisi:
             analisi.avvisi[punto.codice] = avvisi
         if scenario is None:
@@ -179,6 +189,7 @@ def analizza(
         else:
             analisi.scenari.append(scenario)
 
+    analisi.simili = trova_simili(analisi.scenari)
     analisi.secondi = time.perf_counter() - inizio
     return analisi
 
@@ -189,11 +200,11 @@ if __name__ == "__main__":
     import sys
     from pathlib import Path
 
-    from generatore.genera import nome_checklist
+    from generatore.genera import nomi_checklist
 
     testo = Path(sys.argv[1]).read_text(encoding="utf-8")
     risultato = analizza(
-        "Prova dal terminale", testo, nome_checklist(testo), avanzamento=print
+        "Prova dal terminale", testo, nomi_checklist(testo), avanzamento=print
     )
     print(
         f"\n{len(risultato.scenari)} scenari, {len(risultato.domande)} domande, {risultato.secondi:.1f} s\n"

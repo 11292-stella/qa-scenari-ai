@@ -1,0 +1,11 @@
+Titolo: Catalogo prodotti del ristorante
+Checklist: prodotti, prodotti_prezzi, prodotti_categorie, prodotti_disponibilita
+
+L'amministratore crea un prodotto dal form Nuovo prodotto e dopo il salvataggio il prodotto compare nel catalogo.
+Nome, prezzo e categoria sono obbligatori; il nome può avere al massimo 80 caratteri.
+Il prezzo deve essere maggiore di zero e avere al massimo 2 cifre decimali.
+Il codice SKU è univoco: non possono esistere due prodotti con lo stesso SKU.
+Si può applicare al prodotto uno sconto percentuale fino al 30%.
+Ogni prodotto appartiene a una sola categoria, scelta tra quelle esistenti.
+Una categoria che contiene prodotti non può essere eliminata.
+La disponibilità di un prodotto non può essere negativa; con disponibilità zero il prodotto compare nel catalogo come "Esaurito".
