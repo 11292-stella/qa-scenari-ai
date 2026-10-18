@@ -49,13 +49,17 @@ class Analisi:
     righe: list[str]
     decisioni: list[Decisione] = field(default_factory=list)
     scenari: list[Scenario] = field(default_factory=list)
-    avvisi: dict[str, list[str]] = field(default_factory=dict)   # codice → correzioni fatte dal ciclo
+    avvisi: dict[str, list[str]] = field(default_factory=dict)
+    non_scritti: list[str] = field(default_factory=list)   # coperti, ma il modello non ha dato uno scenario valido   # codice → correzioni fatte dal ciclo
     secondi: float = 0.0
 
     @property
     def domande(self) -> list[str]:
         """Per ora le domande aperte sono i punti non coperti (le domande vere arriveranno dopo)."""
-        return [f"{d.codice}: {d.cosa}" for d in self.decisioni if not d.coperto]
+        domande = [f"{d.codice}: {d.cosa}" for d in self.decisioni if not d.coperto]
+        domande += [f"{d.codice}: {d.cosa} (riga {d.riga}, ma il modello non ha scritto uno scenario valido: "
+                    f"scrivilo a mano)" for d in self.decisioni if d.codice in self.non_scritti]
+        return domande
 
     @property
     def feature(self) -> str:
@@ -168,9 +172,12 @@ def analizza(
     for i, (decisione, punto) in enumerate(coperti, start=1):
         avvisa(f"Passo B: {punto.codice} ({i}/{len(coperti)})")
         scenario, avvisi = scrivi_scenario(testo_scenario, punto, decisione.testo_riga, esempio)
-        analisi.scenari.append(scenario)
         if avvisi:
             analisi.avvisi[punto.codice] = avvisi
+        if scenario is None:
+            analisi.non_scritti.append(punto.codice)   # il punto finisce tra le domande, con un avviso
+        else:
+            analisi.scenari.append(scenario)
 
     analisi.secondi = time.perf_counter() - inizio
     return analisi

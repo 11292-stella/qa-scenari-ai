@@ -17,6 +17,7 @@ import time
 from pathlib import Path
 
 import ollama
+from pydantic import ValidationError
 
 from generatore import PROGETTO
 from generatore.checklist import PuntoChecklist, leggi_checklist, leggi_esempio
@@ -26,18 +27,20 @@ from generatore.gherkin import feature, pulisci_passo, scenario_gherkin
 from generatore.schemas import Scenario, schema_scenario
 
 MODELLO = "qwen2.5:3b"
-OPZIONI = {"temperature": 0, "num_ctx": 4096, "num_predict": 500}
+OPZIONI = {"temperature": 0, "num_ctx": 4096, "num_predict": 1200}
 
 
 MAX_TENTATIVI = 3
 
 
 def scrivi_scenario(modello_prompt: str, punto: PuntoChecklist, testo_riga: str,
-                    esempio: str = "") -> tuple[Scenario, list[str]]:
+                    esempio: str = "") -> tuple[Scenario | None, list[str]]:
     """L'AI scrive lo scenario di UN punto partendo dalla riga; Python aggiunge codice, tipo e citazione.
 
     Ciclo di correzione: se lo scenario ha errori di forma (controlla_scenario), Python li rimanda
     all'AI e le chiede di riscriverlo, fino a MAX_TENTATIVI. Restituisce (scenario, avvisi).
+    Se la risposta non è mai un JSON valido (es. il modello si ripete e viene tagliato),
+    restituisce (None, avvisi): lo scenario viene saltato, ma l'analisi continua.
     """
     Schema = schema_scenario(punto.livelli)
     prompt = (modello_prompt
@@ -57,7 +60,16 @@ def scrivi_scenario(modello_prompt: str, punto: PuntoChecklist, testo_riga: str,
             options=OPZIONI,
         )
         contenuto = risposta.message.content
-        scritto = Schema.model_validate_json(contenuto)
+        try:
+            scritto = Schema.model_validate_json(contenuto)
+        except ValidationError as errore:
+            scritto = None
+            problema = ("la risposta non era un JSON valido e completo (forse troppo lunga): "
+                        "scrivi passi brevi, al massimo 25 parole ciascuno")
+            avvisi.append(f"Tentativo {tentativo}: {problema} [{errore.errors()[0]['msg'][:80]}]")
+            messaggi.append({"role": "assistant", "content": contenuto[:2000]})
+            messaggi.append({"role": "user", "content": f"Errore: {problema}. Riscrivi lo scenario in JSON."})
+            continue
         # si controlla il passo GIÀ pulito: gli errori che Python corregge da solo ("@utente", "Dato" ripetuto)
         # non devono far sprecare tentativi all'AI
         problemi = controlla_scenario(*([pulisci_passo(p) for p in passi]
@@ -69,6 +81,9 @@ def scrivi_scenario(modello_prompt: str, punto: PuntoChecklist, testo_riga: str,
         messaggi.append({"role": "user", "content": "Lo scenario ha questi problemi:\n- " + "\n- ".join(problemi)
                          + "\nRiscrivilo correggendoli, sempre in JSON."})
     else:
+        if scritto is None:
+            avvisi.append(f"Scenario NON scritto: nessuna risposta valida in {MAX_TENTATIVI} tentativi.")
+            return None, avvisi
         avvisi.append(f"Problemi non risolti dopo {MAX_TENTATIVI} tentativi: controlla lo scenario a mano.")
 
     scenario = Scenario(codice=punto.codice, tipo=punto.tipo, citazione=testo_riga, **scritto.model_dump())
@@ -143,6 +158,9 @@ def main() -> None:
         scenario, avvisi = scrivi_scenario(modello_prompt, punto, decisione["testo_riga"], esempio)
         for avviso in avvisi:
             print(f"🔁 {punto.codice} {avviso}")
+        if scenario is None:
+            print(f"⚠️ {punto.codice}: scenario saltato\n")
+            continue
         scenari.append(scenario)
 
         livello_atteso = attesi.get(punto.codice)
