@@ -9,12 +9,33 @@ Il programma, con **Ollama** e il modello **`qwen2.5:3b`** in locale (gratis, se
 2. **domande aperte** per i punti di cui il requisito non parla (invece di inventare il comportamento);
 3. **scheletri di codice** per ogni scenario in **Playwright** (Python), **Robot Framework** e **Appium** (Java).
 
-È un progetto per imparare a **gestire un'AI**, non solo a usarla: prompt con regole ed esempi, risposte in JSON con schema,
-controlli automatici con ciclo di correzione e, soprattutto, **misure** per decidere quale versione del prompt tenere.
+È uno strumento personale: mi serve come **base di partenza** per testare i progetti su cui lavorerò, qualunque essi siano.
 
 ![Il form: requisito, checklist e bottone "Controlla il requisito"](docs/img/form.png)
 
 > Gli scenari sono una **bozza** da rivedere, non test pronti: è un aiuto per partire, la revisione resta della tester.
+
+---
+
+## Com'è nato
+
+All'inizio volevo fare un'altra cosa: **job-agent**, un agente AI **gratuito e locale** che mi aiutasse a cercare lavoro.
+L'idea era che scrivesse al posto mio nella chat di Claude per trovare aziende tech a cui mandare un'autocandidatura,
+e che preparasse una mail diversa per ogni azienda: se l'azienda lavora con React, la candidatura punta su React;
+se usa linguaggi che non conosco, chiede se in futuro ci sarà un'opportunità adatta al mio profilo, e così via.
+
+Andando avanti ho trovato troppi limiti, tra cui il più grande: **non si può automatizzare la chat web di Claude**
+(non è permesso dalle condizioni d'uso). Così ho fermato quel progetto.
+
+A quel punto avevo già installato **Ollama** e costruito lo scheletro: un modello locale che risponde in JSON con uno schema,
+i controlli in Python, il ciclo di correzione. Mi sono chiesta a cosa potesse servirmi nel lavoro di tutti i giorni,
+e ho riusato quello scheletro per un software che mi aiuti a **testare al meglio i progetti futuri**: parto dal requisito,
+applico le checklist della mia esperienza da QA e ottengo una prima bozza di scenari, domande per il product owner e
+scheletri di codice nei framework che uso.
+
+Strada facendo ho imparato anche a **gestire un'AI** e non solo a usarla: prompt con regole ed esempi, risposte in JSON
+con schema, controlli automatici e soprattutto **misure** per decidere quale versione del prompt tenere.
+Le prove, con i numeri, sono nelle sezioni qui sotto e nel diario [PROGRESS.md](PROGRESS.md).
 
 ---
 

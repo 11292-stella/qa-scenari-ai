@@ -14,13 +14,20 @@ Ultimo aggiornamento: 18 ottobre 2026
 
 ## 1. Perché questo progetto
 
-Voglio dimostrare che so **gestire un'AI**, e non solo usarla:
+Il progetto nasce da **job-agent**: un agente AI gratuito e locale che doveva scrivere al posto mio nella chat di Claude,
+trovare aziende tech e preparare un'autocandidatura diversa per ognuna (React → candidatura su React; linguaggi che non
+conosco → chiedere se in futuro ci sarà un'offerta per il mio profilo). Troppi limiti, a partire dal fatto che la chat web
+di Claude non si può automatizzare: progetto fermato.
+
+Avevo già Ollama e lo scheletro (JSON con schema, controlli, ciclo di correzione), e l'ho riusato per uno strumento utile
+nel lavoro di tutti i giorni: una **base per testare al meglio i progetti futuri**. L'AI fa il primo lavoro della tester
+(legge il requisito e pensa a cosa testare), io controllo e misuro.
+
+Strada facendo è diventato anche il modo per imparare a **gestire un'AI**, e non solo a usarla:
 - scrivere prompt con regole ed esempi;
 - obbligare l'AI a rispondere in un formato preciso (JSON con schema);
 - controllare automaticamente le risposte e farle correggere;
 - **misurare** se un prompt è migliore di un altro, con numeri.
-
-Il tema è il QA, il mio lavoro: l'AI fa il primo lavoro della tester (legge il requisito e pensa a cosa testare), io controllo e misuro.
 Lo strumento è **generale**: funziona con i requisiti di qualsiasi progetto, perché la mia esperienza da QA è nelle **checklist** riusabili.
 
 ---
